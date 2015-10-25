@@ -1,0 +1,4 @@
+#main {
+    -fx-background-image: url("background1.bmp");
+    -fx-background-size: stretch;
+}

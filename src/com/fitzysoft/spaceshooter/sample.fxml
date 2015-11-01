@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -8,5 +9,13 @@
 <?import javafx.scene.control.Label?>
 
 
-<GridPane id="main" alignment="center" hgap="10" stylesheets="@mainscene.css" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fitzysoft.spaceshooter.Controller">
-</GridPane>
+<Pane id="main" stylesheets="@mainscene.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fitzysoft.spaceshooter.Controller">
+   <children>
+      <ImageView fx:id="player" fitHeight="64.0" fitWidth="64.0" layoutX="1056.0" layoutY="768.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@ship1.png" />
+         </image>
+      </ImageView>
+       <ImageView 
+   </children>
+</Pane>

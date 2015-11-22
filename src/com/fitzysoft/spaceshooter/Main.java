@@ -1,19 +1,20 @@
 package com.fitzysoft.spaceshooter;
 
+import carlfx.gameengine.GameWorld;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    // todo: build out an abstract base
+    GameWorld gameWorld = new SFSpaceShooterGame(30, "Super Fitzy Space Shooter");
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+       //Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
 
 //        EventHandler<KeyEvent> eventHandler = new EventHandler<KeyEvent>() {
 //            @Override
@@ -23,21 +24,15 @@ public class Main extends Application {
 //                event.consume();
 //            }
 //        };
-        root.setFocusTraversable(true);
 //        root.setOnKeyPressed(eventHandler);
-        root.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
-            @Override
-            public void handle(KeyEvent kEvent) {
-                if (kEvent.getCode() == KeyCode.SPACE) {
-                    System.out.println(" Space Bar pressed");
-                }
-
-            }
-        });
 
         primaryStage.setTitle("Super Fitzy Space Shooter");
-        primaryStage.setScene(new Scene(root));
+        //primaryStage.setScene(new Scene(root));
+
+        gameWorld.initialize(primaryStage);
+        gameWorld.beginGameLoop();
+
         //primaryStage.setFullScreen(true);
         primaryStage.show();
     }

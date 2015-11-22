@@ -30,8 +30,8 @@ public class Controller implements Initializable {
         assert mainPane != null : "fx:id=\"main\" was not injected: check your FXML file 'sample.fxml'.";
 
         // initialize your logic here: all @FXML variables will have been injected
-        ImageView shipImageView = (ImageView) mainPane.getChildren().get(0);
-        playerShip = new PlayerShip(shipImageView);
+        //ImageView shipImageView = (ImageView) mainPane.getChildren().get(0);
+        playerShip = new PlayerShip();
         mainPane.setOnKeyPressed(eventHandler);
 
 //        mainPane.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);

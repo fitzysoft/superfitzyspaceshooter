@@ -7,7 +7,10 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Group;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyEvent;
 
+import javafx.scene.media.AudioClip;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.*;
@@ -32,7 +35,7 @@ public class SFSpaceShooterGame extends GameWorld {
         // Create the scene
         setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), 1024, 768));
-        getGameSurface().setFill(Color.BLACK);
+        getGameSurface().setFill(Color.WHITE);
         stage.setScene(getGameSurface());
 
         // create spaceship
@@ -40,6 +43,10 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // create aliens
         //
+        // todo: create some aliens
+
+        // Setup our input handlers
+        setupInput(stage);
 
         // load Kai's cool beats
         //
@@ -52,19 +59,17 @@ public class SFSpaceShooterGame extends GameWorld {
             logger.severe(e.getMessage());
         }
 
-        // Not sure I should do it here
+        // A little background music if you please
         //
-        getSoundManager().playSound("background_music");
+        getSoundManager().playSound("background_music", AudioClip.INDEFINITE);
 
     }
 
     private void createPlayerShip() {
         Scene gameSurface = getGameSurface();
 
-//        playerShip.setTranslateX(gameSurface.getWidth()/2);
-//        playerShip.setTranslateY(gameSurface.getHeight() / 2);
-//        playerShip.setVisible(true);
-//        playerShip.setCacheHint(CacheHint.SPEED);
+        playerShip.node.setTranslateX(gameSurface.getWidth()/2);
+        playerShip.node.setTranslateY(gameSurface.getHeight() / 2);
         getSpriteManager().addSprites(playerShip);
         getSceneNodes().getChildren().add(0, playerShip.node);
 
@@ -74,6 +79,19 @@ public class SFSpaceShooterGame extends GameWorld {
     protected void handleUpdate(Sprite sprite) {
         // advance object
         sprite.update();
+    }
+
+    private void setupInput(Stage primaryStage) {
+        EventHandler eventHandler = new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                // todo
+                logger.info("key hit");
+            }
+        };
+
+        // Initialize input
+        primaryStage.getScene().setOnKeyPressed(eventHandler);
     }
 
 }

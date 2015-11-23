@@ -14,7 +14,7 @@ public class PlayerShip extends Sprite {
     public PlayerShip() {
         // Load one image.
         ImageView imageView = new ImageView();
-        imageView.setImage(new Image("file://./ship1.png", true));
+        imageView.setImage(new Image("file:///Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/ship1.png", true));
         //getClass().getClassLoader().getResource("laser_2.mp3")
         //imageView.setImage(new Image("file://./ship1.png", true));
         imageView.setCache(true);
@@ -37,11 +37,9 @@ public class PlayerShip extends Sprite {
     @Override
     public void update() {
         // todo: move ship
-//        node.setLayoutX(100);
-//        node.setLayoutY(100);
 //        node.setVisible(true);
-        //node.setTranslateX(node.getTranslateX() + 0.5);
-        //node.setTranslateY(node.getTranslateY() + 0.5);
+        node.setTranslateX(node.getTranslateX() + 0.5);
+        node.setTranslateY(node.getTranslateY() + 0.5);
 
     }
 }

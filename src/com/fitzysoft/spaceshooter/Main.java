@@ -18,7 +18,7 @@ public class Main extends Application {
 
         gameWorld.beginGameLoop();
         gameWorld.setApplication(this);
-        //primaryStage.setFullScreen(true);
+        primaryStage.setFullScreen(true);
         primaryStage.show();
 
     }

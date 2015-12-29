@@ -51,10 +51,12 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // load Kai's cool beats
         //
+        // todo: Adjust the resource paths so they are not hardcoded
         // getClass().getClassLoader().getResource("SFSsong.WAV")
         try {
             getSoundManager().loadSoundEffects("background_music", new URL("file:///Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/sfssong.wav"));
-
+            getSoundManager().loadSoundEffects("thrust", new URL("file:////Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/thrust.wav"));
+            getSoundManager().loadSoundEffects("slow", new URL("file:////Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/slow.wav"));
         } catch (MalformedURLException e) {
             // todo...
             logger.severe(e.getMessage());
@@ -125,11 +127,13 @@ public class SFSpaceShooterGame extends GameWorld {
                         break;
                     case UP:
                         // todo: add first press logic
-                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD, false);
+                        getSoundManager().playSound("thrust");
+                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD);
                         break;
                     case DOWN:
                         // todo: add first press logic
-                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK, false);
+                        getSoundManager().playSound("slow");
+                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK);
                         break;
                     default:
                         //

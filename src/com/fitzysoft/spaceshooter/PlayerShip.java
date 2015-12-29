@@ -3,6 +3,7 @@ package com.fitzysoft.spaceshooter;
 import javafx.scene.image.Image;
 import carlfx.gameengine.Sprite;
 import javafx.scene.image.ImageView;
+import javafx.scene.media.AudioClip;
 
 /**
  * Created by James FitzGerald on 11/1/15.
@@ -61,12 +62,9 @@ public class PlayerShip extends Sprite {
     private PlayerThrustDirection thrustDirection = PlayerThrustDirection.PLAYER_THRUST_OFF;
     private boolean thrustFirstPress = false;
 
-    public void thrustShip(PlayerThrustDirection thrust, boolean firstPress) {
+    public void thrustShip(PlayerThrustDirection thrust) {
         thrustDirection = thrust;
-        thrustFirstPress = firstPress;
-
-        // todo:
-        // if firstPress then play thrust sound
+        //thrustFirstPress = firstPress;
     }
 
 
@@ -74,6 +72,12 @@ public class PlayerShip extends Sprite {
     public void update() {
         // todo: move ship
 //        node.setVisible(true);
+
+        // todo: Check screen coordinates
+        // Will trap ship to the screen for now
+        // and add in scrolling a little later
+        //
+
 
         // Steer
         switch (steerDirection) {
@@ -86,7 +90,7 @@ public class PlayerShip extends Sprite {
         }
 
         // Thrust
-
+        double speed;
         switch (thrustDirection) {
             case PLAYER_THRUST_FWD:
                 // Based on the angle we work out how much along the Y and X axis we need to move
@@ -94,7 +98,7 @@ public class PlayerShip extends Sprite {
                 double deltaY = Math.sin((node.getRotate() - 90) * degToRConst) * shipAccel;
 
                 // We have a maximum speed, so lets work out how fast we would be going. Shout out to Pythagorus!
-                double speed = Math.sqrt((shipXSpeed + deltaX)*(shipXSpeed + deltaX) + (shipYSpeed + deltaY)*(shipYSpeed + deltaY));
+                speed = Math.sqrt((shipXSpeed + deltaX)*(shipXSpeed + deltaX) + (shipYSpeed + deltaY)*(shipYSpeed + deltaY));
                 // If it is not too fast then we can thrust in the desired direction
                 if (speed < maxShipSpeed) {
                     shipXSpeed += deltaX;
@@ -109,56 +113,20 @@ public class PlayerShip extends Sprite {
                 }
                 break;
             case PLAYER_THRUST_BACK:
-                // todo: slow down...
+                // lets slow down
+                speed = shipSpeed - shipAccel;
+                if (speed < 0) {
+                    shipXSpeed = shipYSpeed = shipSpeed = 0;
+                } else {
+                    // and drift tw
+                    shipXSpeed = shipXSpeed * (speed/shipSpeed);
+                    shipYSpeed = shipYSpeed * (speed/shipSpeed);
+                    shipSpeed = speed;
+                }
         }
         // And make the sprite move
         node.setTranslateX(node.getTranslateX() + shipXSpeed);
         node.setTranslateY(node.getTranslateY() + shipYSpeed);
-
-        /*
-        // TODO: Abandoning the reverse thrust, need to clean this code up.
-    // TODO: Revisit drift math
-    //
-
-    if (thrust == thrust_fwd) {
-        if (firstPress)
-            m_thrustSound.playSound();
-        float deltaX = cos((m_shipSprite.m_angle - 90) * degToRConst)
-                * m_config.shipAccel;
-        float deltaY = sin((m_shipSprite.m_angle - 90) * degToRConst)
-                * m_config.shipAccel;
-        float speed = sqrt((m_shipXSpeed + deltaX) * (m_shipXSpeed + deltaX) +
-                           (m_shipYSpeed + deltaY) * (m_shipYSpeed + deltaY));
-
-        if (speed < m_config.maxShipSpeed) {
-            // add the new vector
-            m_shipXSpeed += deltaX;
-            m_shipYSpeed += deltaY;
-            m_shipSpeed = speed;
-        } else {
-            // we are maxed out.  We should drift towards the new direction.
-            // to be worked out!
-            // w.i.p
-            m_shipXSpeed += deltaX;
-            m_shipYSpeed += deltaY;
-            m_shipXSpeed = m_shipXSpeed * (m_shipSpeed/speed);
-            m_shipYSpeed = m_shipYSpeed * (m_shipSpeed/speed);
-        }
-    } else {
-        if (firstPress)
-            m_slowSound.playSound();
-        // lets slow down by m_config.shipAccel
-        float speed = m_shipSpeed - m_config.shipAccel;
-        if (speed < 0) {
-            m_shipXSpeed = m_shipYSpeed = m_shipSpeed = 0;
-        } else {
-            // and drift tw
-            m_shipXSpeed = m_shipXSpeed * (speed/m_shipSpeed);
-            m_shipYSpeed = m_shipYSpeed * (speed/m_shipSpeed);
-            m_shipSpeed = speed;
-        }
-    }
-         */
 
     }
 }

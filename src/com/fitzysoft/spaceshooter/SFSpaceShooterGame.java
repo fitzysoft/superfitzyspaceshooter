@@ -81,17 +81,38 @@ public class SFSpaceShooterGame extends GameWorld {
         sprite.update();
     }
 
+    // todo: Do I have to worry about thread safety? I mean can input envents and handleUpdate be called at the same time?
     private void setupInput(Stage primaryStage) {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                // todo
-                logger.info("key hit");
+                // todo: Handle thrust
+
+
+                switch (event.getCode()) {
+                    //case KP_LEFT:
+                    case LEFT:
+                        playerShip.setPlayerSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        break;
+                    //case KP_RIGHT:
+                    case RIGHT:
+                        playerShip.setPlayerSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        break;
+                    default:
+                        //
+                }
+
             }
+
         };
 
         // Initialize input
         primaryStage.getScene().setOnKeyPressed(eventHandler);
+        primaryStage.getScene().setOnKeyReleased(eventHandler);
     }
 
 }

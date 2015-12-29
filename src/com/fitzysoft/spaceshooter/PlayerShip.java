@@ -11,6 +11,8 @@ import java.net.URL;
  */
 public class PlayerShip extends Sprite {
 
+    private static final double shipRotate = 2.0;
+
     public PlayerShip() {
         // Load one image.
         ImageView imageView = new ImageView();
@@ -34,12 +36,34 @@ public class PlayerShip extends Sprite {
 
     }
 
+    public enum PlayerSteerDirection { PLAYER_STEER_LEFT, PLAYER_STEER_STRAIGHT, PLAYER_STEER_RIGHT};
+
+    public PlayerSteerDirection getPlayerSteerDirection() {
+        return playerSteerDirection;
+    }
+
+    public void setPlayerSteerDirection(PlayerSteerDirection playerSteerDirection) {
+        this.playerSteerDirection = playerSteerDirection;
+    }
+
+    private PlayerSteerDirection playerSteerDirection = PlayerSteerDirection.PLAYER_STEER_STRAIGHT;
+
+
     @Override
     public void update() {
         // todo: move ship
 //        node.setVisible(true);
-        node.setTranslateX(node.getTranslateX() + 0.5);
-        node.setTranslateY(node.getTranslateY() + 0.5);
+        //node.setTranslateX(node.getTranslateX() + 0.5);
+        //node.setTranslateY(node.getTranslateY() + 0.5);
+
+        switch (playerSteerDirection) {
+            case PLAYER_STEER_LEFT:
+                node.setRotate(-1*shipRotate + node.getRotate());
+                break;
+            case PLAYER_STEER_RIGHT:
+                node.setRotate(shipRotate + node.getRotate());
+                break;
+        }
 
     }
 }

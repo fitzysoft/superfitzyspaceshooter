@@ -2,7 +2,8 @@ package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.GameWorld;
 import carlfx.gameengine.Sprite;
-import javafx.scene.CacheHint;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -65,6 +66,23 @@ public class SFSpaceShooterGame extends GameWorld {
 
     }
 
+    Application application;
+    public void setApplication(Application application) {
+        this.application = application;
+    }
+
+    public void quit() {
+        Platform.exit();
+        System.exit(0);
+//        shutdown();
+//
+//        try {
+//            application.stop();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
     private void createPlayerShip() {
         Scene gameSurface = getGameSurface();
 
@@ -90,17 +108,28 @@ public class SFSpaceShooterGame extends GameWorld {
 
 
                 switch (event.getCode()) {
+                    case ESCAPE:
+                        quit();
+                        break;
                     //case KP_LEFT:
                     case LEFT:
-                        playerShip.setPlayerSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                        playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
                         break;
                     //case KP_RIGHT:
                     case RIGHT:
-                        playerShip.setPlayerSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                        playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        break;
+                    case UP:
+                        // todo: add first press logic
+                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD, false);
+                        break;
+                    case DOWN:
+                        // todo: add first press logic
+                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK, false);
                         break;
                     default:
                         //

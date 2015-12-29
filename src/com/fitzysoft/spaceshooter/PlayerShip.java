@@ -4,14 +4,22 @@ import javafx.scene.image.Image;
 import carlfx.gameengine.Sprite;
 import javafx.scene.image.ImageView;
 
-import java.net.URL;
-
 /**
  * Created by James FitzGerald on 11/1/15.
  */
 public class PlayerShip extends Sprite {
 
     private static final double shipRotate = 2.0;
+    private static final int maxShipSpeed = 16;
+    private static final double shipAccel = 0.25;
+
+    // close enough?
+    private static final double degToRConst = 3.14159265358979323846264338327950288419716939937510 / 180;
+
+    private double shipXSpeed = 0;
+    private double shipYSpeed = 0;
+    private double shipSpeed = 0;
+
 
     public PlayerShip() {
         // Load one image.
@@ -38,25 +46,37 @@ public class PlayerShip extends Sprite {
 
     public enum PlayerSteerDirection { PLAYER_STEER_LEFT, PLAYER_STEER_STRAIGHT, PLAYER_STEER_RIGHT};
 
-    public PlayerSteerDirection getPlayerSteerDirection() {
-        return playerSteerDirection;
+    public PlayerSteerDirection getSteerDirection() {
+        return steerDirection;
     }
 
-    public void setPlayerSteerDirection(PlayerSteerDirection playerSteerDirection) {
-        this.playerSteerDirection = playerSteerDirection;
+    public void setSteerDirection(PlayerSteerDirection steerDirection) {
+        this.steerDirection = steerDirection;
     }
 
-    private PlayerSteerDirection playerSteerDirection = PlayerSteerDirection.PLAYER_STEER_STRAIGHT;
+    private PlayerSteerDirection steerDirection = PlayerSteerDirection.PLAYER_STEER_STRAIGHT;
+
+
+    public enum PlayerThrustDirection {PLAYER_THRUST_OFF, PLAYER_THRUST_FWD, PLAYER_THRUST_BACK};
+    private PlayerThrustDirection thrustDirection = PlayerThrustDirection.PLAYER_THRUST_OFF;
+    private boolean thrustFirstPress = false;
+
+    public void thrustShip(PlayerThrustDirection thrust, boolean firstPress) {
+        thrustDirection = thrust;
+        thrustFirstPress = firstPress;
+
+        // todo:
+        // if firstPress then play thrust sound
+    }
 
 
     @Override
     public void update() {
         // todo: move ship
 //        node.setVisible(true);
-        //node.setTranslateX(node.getTranslateX() + 0.5);
-        //node.setTranslateY(node.getTranslateY() + 0.5);
 
-        switch (playerSteerDirection) {
+        // Steer
+        switch (steerDirection) {
             case PLAYER_STEER_LEFT:
                 node.setRotate(-1*shipRotate + node.getRotate());
                 break;
@@ -64,6 +84,81 @@ public class PlayerShip extends Sprite {
                 node.setRotate(shipRotate + node.getRotate());
                 break;
         }
+
+        // Thrust
+
+        switch (thrustDirection) {
+            case PLAYER_THRUST_FWD:
+                // Based on the angle we work out how much along the Y and X axis we need to move
+                double deltaX = Math.cos((node.getRotate() - 90) * degToRConst) * shipAccel;
+                double deltaY = Math.sin((node.getRotate() - 90) * degToRConst) * shipAccel;
+
+                // We have a maximum speed, so lets work out how fast we would be going. Shout out to Pythagorus!
+                double speed = Math.sqrt((shipXSpeed + deltaX)*(shipXSpeed + deltaX) + (shipYSpeed + deltaY)*(shipYSpeed + deltaY));
+                // If it is not too fast then we can thrust in the desired direction
+                if (speed < maxShipSpeed) {
+                    shipXSpeed += deltaX;
+                    shipYSpeed += deltaY;
+                    shipSpeed = speed;
+
+                } else {
+                    // we are maxed out.  We should drift towards the new direction.
+                    //
+                    shipXSpeed = (shipXSpeed + deltaX) * shipSpeed/speed;
+                    shipYSpeed = (shipYSpeed + deltaY) * shipSpeed/speed;
+                }
+                break;
+            case PLAYER_THRUST_BACK:
+                // todo: slow down...
+        }
+        // And make the sprite move
+        node.setTranslateX(node.getTranslateX() + shipXSpeed);
+        node.setTranslateY(node.getTranslateY() + shipYSpeed);
+
+        /*
+        // TODO: Abandoning the reverse thrust, need to clean this code up.
+    // TODO: Revisit drift math
+    //
+
+    if (thrust == thrust_fwd) {
+        if (firstPress)
+            m_thrustSound.playSound();
+        float deltaX = cos((m_shipSprite.m_angle - 90) * degToRConst)
+                * m_config.shipAccel;
+        float deltaY = sin((m_shipSprite.m_angle - 90) * degToRConst)
+                * m_config.shipAccel;
+        float speed = sqrt((m_shipXSpeed + deltaX) * (m_shipXSpeed + deltaX) +
+                           (m_shipYSpeed + deltaY) * (m_shipYSpeed + deltaY));
+
+        if (speed < m_config.maxShipSpeed) {
+            // add the new vector
+            m_shipXSpeed += deltaX;
+            m_shipYSpeed += deltaY;
+            m_shipSpeed = speed;
+        } else {
+            // we are maxed out.  We should drift towards the new direction.
+            // to be worked out!
+            // w.i.p
+            m_shipXSpeed += deltaX;
+            m_shipYSpeed += deltaY;
+            m_shipXSpeed = m_shipXSpeed * (m_shipSpeed/speed);
+            m_shipYSpeed = m_shipYSpeed * (m_shipSpeed/speed);
+        }
+    } else {
+        if (firstPress)
+            m_slowSound.playSound();
+        // lets slow down by m_config.shipAccel
+        float speed = m_shipSpeed - m_config.shipAccel;
+        if (speed < 0) {
+            m_shipXSpeed = m_shipYSpeed = m_shipSpeed = 0;
+        } else {
+            // and drift tw
+            m_shipXSpeed = m_shipXSpeed * (speed/m_shipSpeed);
+            m_shipYSpeed = m_shipYSpeed * (speed/m_shipSpeed);
+            m_shipSpeed = speed;
+        }
+    }
+         */
 
     }
 }

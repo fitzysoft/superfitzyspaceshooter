@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     // todo: build out an abstract base
-    GameWorld gameWorld = new SFSpaceShooterGame(30, "Super Fitzy Space Shooter");
+    SFSpaceShooterGame gameWorld = new SFSpaceShooterGame(30, "Super Fitzy Space Shooter");
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -15,14 +15,17 @@ public class Main extends Application {
         primaryStage.setTitle("Super Fitzy Space Shooter");
 
         gameWorld.initialize(primaryStage);
-        gameWorld.beginGameLoop();
 
+        gameWorld.beginGameLoop();
+        gameWorld.setApplication(this);
         //primaryStage.setFullScreen(true);
         primaryStage.show();
+
     }
 
 
     public static void main(String[] args) {
         launch(args);
+
     }
 }

@@ -28,7 +28,7 @@ public class SFSpaceShooterGame extends GameWorld {
         super(fps, title);
     }
 
-    public PlayerShip playerShip = new PlayerShip();
+    public PlayerShip playerShip = new PlayerShip(getSoundManager());
 
     public void initialize(Stage stage) {
         stage.setTitle(getWindowTitle());
@@ -51,21 +51,11 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // load Kai's cool beats
         //
-        // todo: Adjust the resource paths so they are not hardcoded
-        // getClass().getClassLoader().getResource("SFSsong.WAV")
-        try {
-            getSoundManager().loadSoundEffects("background_music", new URL("file:///Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/sfssong.wav"));
-            getSoundManager().loadSoundEffects("thrust", new URL("file:////Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/thrust.wav"));
-            getSoundManager().loadSoundEffects("slow", new URL("file:////Users/jamesfitzgerald/Documents/personal-devel/superfitzy-javafx/src/com/fitzysoft/spaceshooter/slow.wav"));
-        } catch (MalformedURLException e) {
-            // todo...
-            logger.severe(e.getMessage());
-        }
+        getSoundManager().loadSoundEffects("background_music", getClass().getClassLoader().getResource("sfssong.wav"));
 
         // A little background music if you please
         //
         getSoundManager().playSound("background_music", AudioClip.INDEFINITE);
-
     }
 
     Application application;
@@ -76,13 +66,6 @@ public class SFSpaceShooterGame extends GameWorld {
     public void quit() {
         Platform.exit();
         System.exit(0);
-//        shutdown();
-//
-//        try {
-//            application.stop();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
     }
 
     private void createPlayerShip() {
@@ -101,7 +84,7 @@ public class SFSpaceShooterGame extends GameWorld {
         sprite.update();
     }
 
-    // todo: Do I have to worry about thread safety? I mean can input envents and handleUpdate be called at the same time?
+    // todo: Do I have to worry about thread safety? I mean can input events and handleUpdate be called at the same time?
     private void setupInput(Stage primaryStage) {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {
             @Override
@@ -126,13 +109,9 @@ public class SFSpaceShooterGame extends GameWorld {
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
                         break;
                     case UP:
-                        // todo: add first press logic
-                        getSoundManager().playSound("thrust");
                         playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD);
                         break;
                     case DOWN:
-                        // todo: add first press logic
-                        getSoundManager().playSound("slow");
                         playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK);
                         break;
                     default:

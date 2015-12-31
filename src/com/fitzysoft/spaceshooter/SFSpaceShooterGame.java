@@ -5,6 +5,7 @@ import carlfx.gameengine.Sprite;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Group;
@@ -28,7 +29,7 @@ public class SFSpaceShooterGame extends GameWorld {
         super(fps, title);
     }
 
-    public PlayerShip playerShip = new PlayerShip(getSoundManager());
+    public PlayerShip playerShip;
 
     public void initialize(Stage stage) {
         stage.setTitle(getWindowTitle());
@@ -38,6 +39,7 @@ public class SFSpaceShooterGame extends GameWorld {
         setGameSurface(new Scene(getSceneNodes(), 1024, 768));
         getGameSurface().setFill(Color.WHITE);
         stage.setScene(getGameSurface());
+        stage.setFullScreen(true);
 
         // create spaceship
         createPlayerShip();
@@ -69,10 +71,7 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     private void createPlayerShip() {
-        Scene gameSurface = getGameSurface();
-
-        playerShip.node.setTranslateX(gameSurface.getWidth()/2);
-        playerShip.node.setTranslateY(gameSurface.getHeight() / 2);
+        playerShip = new PlayerShip(getSoundManager(), getGameSurface());
         getSpriteManager().addSprites(playerShip);
         getSceneNodes().getChildren().add(0, playerShip.node);
 
@@ -84,9 +83,22 @@ public class SFSpaceShooterGame extends GameWorld {
         sprite.update();
     }
 
+    @Override
+    protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
+
+        // todo: implement checks for player colliding with enemies
+        // todo: implement checks for missiles colliding with enemies
+
+
+
+        return super.handleCollision(spriteA, spriteB);
+    }
+
     // todo: Do I have to worry about thread safety? I mean can input events and handleUpdate be called at the same time?
     private void setupInput(Stage primaryStage) {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {
+
+            private boolean firstThrust = false;
             @Override
             public void handle(KeyEvent event) {
                 // todo: Handle thrust
@@ -101,19 +113,34 @@ public class SFSpaceShooterGame extends GameWorld {
                         playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        event.consume();
                         break;
                     //case KP_RIGHT:
                     case RIGHT:
                         playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
                                 PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        event.consume();
                         break;
                     case UP:
-                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD);
-                        break;
                     case DOWN:
-                        playerShip.thrustShip(PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK);
+                        if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                            if (!firstThrust) {
+                                playerShip.thrustShip(event.getCode() == KeyCode.UP ?
+                                        PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD :
+                                        PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK);
+                                firstThrust = true;
+                            }
+                            event.consume();
+                        } else {
+                            firstThrust = false;
+                        }
                         break;
+                    case CONTROL:
+                        if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                            playerShip.fire();
+                            event.consume();
+                        }
                     default:
                         //
                 }

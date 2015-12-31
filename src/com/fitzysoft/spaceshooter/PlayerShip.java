@@ -1,21 +1,23 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.SoundManager;
+import javafx.geometry.Point2D;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import carlfx.gameengine.Sprite;
 import javafx.scene.image.ImageView;
-import javafx.scene.media.AudioClip;
-
-import java.net.URL;
+import java.util.logging.*;
 
 /**
  * Created by James FitzGerald on 11/1/15.
  */
 public class PlayerShip extends Sprite {
 
-    private static final double shipRotate = 2.0;
-    private static final int maxShipSpeed = 16;
-    private static final double shipAccel = 0.5;
+    private static Logger logger = Logger.getLogger("com.fitzysoft.sfs");
+
+    private static final double shipRotate = 6.0;
+    private static final int maxShipSpeed = 32;
+    private static final double shipAccel = 1.0;
 
     // close enough?
     private static final double degToRConst = 3.14159265358979323846264338327950288419716939937510 / 180;
@@ -25,24 +27,28 @@ public class PlayerShip extends Sprite {
     private double shipSpeed = 0;
 
     private SoundManager soundManager;
+    private Scene scene;
 
-    public PlayerShip(SoundManager soundManager) {
+    public PlayerShip(SoundManager soundManager, Scene scene) {
+
+        this.scene = scene;
 
         // Load sound effects
         this.soundManager = soundManager;
         soundManager.loadSoundEffects("thrust", getClass().getClassLoader().getResource("thrust.wav"));
         soundManager.loadSoundEffects("slow", getClass().getClassLoader().getResource("slow.wav"));
+        soundManager.loadSoundEffects("fire", getClass().getClassLoader().getResource("fire.wav"));
 
         // Load one image.
         ImageView imageView = new ImageView();
         imageView.setImage(new Image(getClass().getClassLoader().getResource("ship1.png").toExternalForm(), true));
         imageView.setCache(true);
-        imageView.setFitWidth(64);
-        imageView.setFitHeight(64);
+        //imageView.setFitWidth(64);
+        //imageView.setFitHeight(64);
         node = imageView;
 
-        node.setLayoutX(100);
-        node.setLayoutY(100);
+        //node.setLayoutX(scene.getWidth()/2);
+        //node.setLayoutY(scene.getHeight()/2);
         node.setVisible(true);
 
         // todo: Consider creating a flipbook of different angles
@@ -67,19 +73,18 @@ public class PlayerShip extends Sprite {
     private PlayerThrustDirection thrustDirection = PlayerThrustDirection.PLAYER_THRUST_OFF;
     private boolean thrustFirstPress = false;
 
+    public void fire() {
+        soundManager.playSound("fire");
+    }
+
     public void thrustShip(PlayerThrustDirection thrust) {
         thrustDirection = thrust;
         soundManager.playSound(thrust == PlayerThrustDirection.PLAYER_THRUST_FWD ? "thrust" : "slow");
     }
+    
 
     @Override
     public void update() {
-
-        // todo: Check screen coordinates
-        // Will trap ship to the screen for now
-        // and add in scrolling a little later
-        //
-
 
         // Steer
         switch (steerDirection) {
@@ -126,9 +131,20 @@ public class PlayerShip extends Sprite {
                     shipSpeed = speed;
                 }
         }
-        // And make the sprite move
-        node.setTranslateX(node.getTranslateX() + shipXSpeed);
-        node.setTranslateY(node.getTranslateY() + shipYSpeed);
 
+        // Check if we hit the edges of the screen
+        if (!(shipXSpeed < 0 && node.getTranslateX() < 0) &&
+                !(shipXSpeed > 0 && node.getTranslateX() > scene.getWidth() - node.getBoundsInLocal().getWidth())) {
+            node.setTranslateX(node.getTranslateX() + shipXSpeed);
+        } else {
+            shipXSpeed = 0;
+        }
+
+        if (!(shipYSpeed < 0 && node.getTranslateY() < 0) &&
+                !(shipYSpeed > 0 && node.getTranslateY() > scene.getHeight() - node.getBoundsInLocal().getHeight())) {
+            node.setTranslateY(node.getTranslateY() + shipYSpeed);
+        } else {
+            shipYSpeed = 0;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.GameWorld;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -13,12 +14,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
         primaryStage.setTitle("Super Fitzy Space Shooter");
-
+        primaryStage.setOnCloseRequest(e -> Platform.exit());
         gameWorld.initialize(primaryStage);
-
-        gameWorld.beginGameLoop();
         gameWorld.setApplication(this);
-        primaryStage.setFullScreen(true);
+        gameWorld.beginGameLoop();
+
+        //primaryStage.setFullScreen(true);
         primaryStage.show();
 
     }

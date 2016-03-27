@@ -87,7 +87,7 @@ public class PlayerShip extends Sprite {
         Point2D scenePoint = new Point2D(node.getTranslateX() + node.getBoundsInLocal().getMaxX()/2,
                 node.getTranslateY() + node.getBoundsInLocal().getMaxY()/2);
         logger.info("Scene Point " + scenePoint.toString());
-        Missile missile = new Missile(soundManager, scene, scenePoint, node.getRotate());
+        Missile missile = new Missile(soundManager, scene, gameWorld, scenePoint, node.getRotate());
         // todo: trying to control z-order - has to be via the order the nodes are in the scene graph
         // there is currently no background image, this will have to be tweaked when we do
         gameWorld.getSceneNodes().getChildren().add(0, missile.node);

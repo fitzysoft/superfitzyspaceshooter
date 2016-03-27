@@ -17,13 +17,18 @@ public class Missile extends Sprite {
     // todo: I have repeated myself
     // close enough?
     private static final double degToRConst = 3.14159265358979323846264338327950288419716939937510 / 180;
-
+    private static final double missileSpeed = 32;
     private SoundManager soundManager;
     private Scene scene;
+    private GameWorld gameWorld;
     private double angle;
+    private double speedX;
+    private double speedY;
 
-    public Missile(SoundManager soundManager, Scene scene, Point2D position, double angle) {
+
+    public Missile(SoundManager soundManager, Scene scene, GameWorld gameWorld, Point2D position, double angle) {
         this.scene = scene;
+        this.gameWorld = gameWorld;
         this.soundManager = soundManager;
         this.angle = angle;
 
@@ -39,10 +44,33 @@ public class Missile extends Sprite {
         //node.setTranslateY(512.0);
         node.setRotate(angle);
         node.setVisible(true);
+
+        // Work out the velocity details while we are here
+        // Based on the angle we work out how much along the Y and X axis we need to move
+        speedX = Math.cos((node.getRotate() - 90) * degToRConst) * missileSpeed;
+        speedY = Math.sin((node.getRotate() - 90) * degToRConst) * missileSpeed;
+
     }
 
     @Override
     public void update() {
+
+        if ((speedX < 0 && node.getTranslateX() < 0) ||
+            (speedX > 0 && node.getTranslateX() > scene.getWidth() - node.getBoundsInLocal().getWidth()) ||
+            (speedY < 0 && node.getTranslateY() < 0) ||
+            (speedY > 0 && node.getTranslateY() > scene.getHeight() - node.getBoundsInLocal().getHeight())) {
+
+            // remove from the sprite manager
+            handleDeath(gameWorld);
+
+            // remove from the scene
+            //
+            gameWorld.getSceneNodes().getChildren().removeAll(node);
+        }
+
+        node.setTranslateX(node.getTranslateX()+speedX);
+        node.setTranslateY(node.getTranslateY()+speedY);
+
 
         /*
         // todo : check if we go out of bounds and destroy
@@ -50,8 +78,8 @@ public class Missile extends Sprite {
         double deltaX = Math.cos((node.getRotate() - 90) * degToRConst); // * 0.5 + 5;
         double deltaY = Math.sin((node.getRotate() - 90) * degToRConst); // * 0.5 + 5l;
 
-        node.setTranslateX(node.getTranslateX()+deltaX);
-        node.setTranslateY(node.getTranslateY()+deltaY);
+        node.setTranslateX(node.getTranslateX()+speedX);
+        node.setTranslateY(node.getTranslateY()+speedY);
         */
     }
 }

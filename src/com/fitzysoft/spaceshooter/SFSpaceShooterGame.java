@@ -124,6 +124,8 @@ public class SFSpaceShooterGame extends GameWorld {
         return super.handleCollision(spriteA, spriteB);
     }
 
+
+
     // todo: Do I have to worry about thread safety? I mean can input events and handleUpdate be called at the same time?
     private void setupInput(Stage primaryStage) {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {

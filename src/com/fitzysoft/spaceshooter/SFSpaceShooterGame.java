@@ -1,20 +1,24 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.GameWorld;
+//import carlfx.gameengine.SoundManager;
 import carlfx.gameengine.Sprite;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
-import javafx.scene.media.AudioClip;
-import java.net.MalformedURLException;
-import java.net.URL;
+//import javafx.scene.media.AudioClip;
+//import java.net.MalformedURLException;
+//import java.net.URL;
+import java.util.Random;
 import java.util.logging.*;
 
 
@@ -24,6 +28,13 @@ import java.util.logging.*;
 public class SFSpaceShooterGame extends GameWorld {
 
     private static Logger logger = Logger.getLogger("com.fitzysoft.sfs");
+    private Random rng = new Random();
+    private String[] kaisCoolBeats = {"sfssong.wav", "MR_FACE_GUY_Citrus_Game.wav", "MR_FACE_GUY_DD1_X.wav",
+            "MR_FACE_GUY_Dogestep_1.wav", "MR_FACE_GUY_Geyser.wav", "MR_FACE_GUY_Level_HEX.wav",
+            "MR_FACE_GUY_Life_n_That_Over_Again.wav", "MR_FACE_GUY_Motion_MEX_2.wav", "MR_FACE_GUY_Motion_MEX.wav",
+            "MR_FACE_GUY_Royality.wav", "MR_FACE_GUY_SMASHDOWN_HIT_CRAZE.wav", "MR_FACE_GUY_Stardown_Dance_1.wav",
+            "MR_FACE_GUY_Static_Floater_MEX.wav", "MR_FACE_GUY_UNiSON!_dARtEd.wav"};
+    private MediaPlayer backgroundMediaPlayer;
 
     public SFSpaceShooterGame(int fps, String title){
         super(fps, title);
@@ -53,11 +64,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // load Kai's cool beats
         //
-        getSoundManager().loadSoundEffects("background_music", getClass().getClassLoader().getResource("sfssong.wav"));
-
-        // A little background music if you please
-        //
-        getSoundManager().playSound("background_music", AudioClip.INDEFINITE);
+        playBackgroundMusic();
     }
 
     Application application;
@@ -70,8 +77,31 @@ public class SFSpaceShooterGame extends GameWorld {
         System.exit(0);
     }
 
+    // very much a work in progress - will likely shift some of this to the SoundManager class
+    private void playBackgroundMusic() {
+        logger.info("playBackgroundMusic");
+        String songToPlay = getClass().getClassLoader().getResource(
+                kaisCoolBeats[rng.nextInt(kaisCoolBeats.length)]).toString();
+        Media media = new Media(songToPlay);
+        backgroundMediaPlayer = new MediaPlayer(media);
+        logger.info("Going to play " + songToPlay);
+        // todo: make sure this is not dangerously recursive and will not blow out the stack
+        // I don't think it will though, I think this method will end
+        backgroundMediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                logger.info("Queuing up the next song");
+                playBackgroundMusic();
+            }
+        });
+
+        logger.info("calling play");
+        backgroundMediaPlayer.play();
+        logger.info("called play");
+    }
+
     private void createPlayerShip() {
-        playerShip = new PlayerShip(getSoundManager(), getGameSurface());
+        playerShip = new PlayerShip(getSoundManager(), getGameSurface(), getSpriteManager(), this);
         getSpriteManager().addSprites(playerShip);
         getSceneNodes().getChildren().add(0, playerShip.node);
 

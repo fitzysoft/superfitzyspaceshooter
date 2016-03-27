@@ -1,12 +1,14 @@
 package carlfx.gameengine;
 
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.MediaPlayer;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.Random;
 
 /**
  * Responsible for loading sound media to be played using an id or key.
@@ -45,13 +47,6 @@ public class SoundManager {
      */
     public void playSound(final String id) {
         playSound(id, 1);
-//        Runnable soundPlay = new Runnable() {
-//            @Override
-//            public void run() {
-//                soundEffectsMap.get(id).play();
-//            }
-//        };
-//        soundPool.execute(soundPlay);
     }
 
     public void playSound(String id, int count) {
@@ -65,6 +60,26 @@ public class SoundManager {
         };
         soundPool.execute(soundPlay);
     }
+
+    /**
+     * Hacked in without much thought to play background music randomly
+     * For sure this could be done in a more adaptable and reusable manner
+     */
+//    public void playRandomSoundInfinitely(String[] ids) {
+//        Runnable soundPlay = new Runnable() {
+//            // unseeded intentionally
+//            Random rng = new Random();
+//            @Override
+//            public void run() {
+//                int choice = rng.nextInt(ids.length);
+//
+//                //AudioClip soundClip = soundEffectsMap.get(ids[choice]);
+//                //soundClip.setCycleCount(1);
+//                //soundClip.play();
+//            }
+//        };
+//        soundPool.execute(soundPlay);
+//    }
 
     /**
      * Stop all threads and media players.

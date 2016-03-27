@@ -33,10 +33,10 @@ public class Missile extends Sprite {
         imageView.setCache(true);
         node = imageView;
         // Position it
-//        node.setTranslateX(position.getX());
-//        node.setTranslateY(position.getY());
-        node.setTranslateX(512.0);
-        node.setTranslateY(512.0);
+        node.setTranslateX(position.getX());
+        node.setTranslateY(position.getY());
+        //node.setTranslateX(512.0);
+        //node.setTranslateY(512.0);
         node.setRotate(angle);
         node.setVisible(true);
     }

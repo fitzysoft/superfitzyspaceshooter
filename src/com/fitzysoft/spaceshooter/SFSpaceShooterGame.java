@@ -167,10 +167,12 @@ public class SFSpaceShooterGame extends GameWorld {
                         }
                         break;
                     case CONTROL:
+                    case SPACE:
                         if (event.getEventType() == KeyEvent.KEY_PRESSED) {
                             playerShip.fire();
                             event.consume();
                         }
+                        break;
                     default:
                         //
                 }

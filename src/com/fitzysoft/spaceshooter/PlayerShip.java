@@ -35,7 +35,7 @@ public class PlayerShip extends Sprite {
     GameWorld gameWorld;
 
     // todo: refactor this interface to just include GameWorld or something higher level
-    public PlayerShip(SoundManager soundManager, Scene scene, SpriteManager spriteManage, GameWorld gameWorld) {
+    public PlayerShip(SoundManager soundManager, Scene scene, SpriteManager spriteManager, GameWorld gameWorld) {
 
         this.scene = scene;
         this.soundManager = soundManager;
@@ -81,14 +81,17 @@ public class PlayerShip extends Sprite {
     private boolean thrustFirstPress = false;
 
     public void fire() {
-        Missile missile = new Missile(soundManager, scene,
-                new Point2D(node.getTranslateX(), node.getTranslateY()), node.getRotate());
-
-        PlayerShip testSprint = new PlayerShip(soundManager, scene, spriteManager, gameWorld);
-
-        spriteManager.addSprites(testSprint);
-        gameWorld.getSceneNodes().getChildren().add(testSprint.node);;
         soundManager.playSound("fire");
+
+        // For now I will start the missile from the center of the screen
+        Point2D scenePoint = new Point2D(node.getTranslateX() + node.getBoundsInLocal().getMaxX()/2,
+                node.getTranslateY() + node.getBoundsInLocal().getMaxY()/2);
+        logger.info("Scene Point " + scenePoint.toString());
+        Missile missile = new Missile(soundManager, scene, scenePoint, node.getRotate());
+        // todo: trying to control z-order - has to be via the order the nodes are in the scene graph
+        // there is currently no background image, this will have to be tweaked when we do
+        gameWorld.getSceneNodes().getChildren().add(0, missile.node);
+        spriteManager.addSprites(missile);
     }
 
     public void thrustShip(PlayerThrustDirection thrust) {

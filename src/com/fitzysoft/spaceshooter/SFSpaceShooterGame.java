@@ -14,10 +14,6 @@ import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
-
-//import javafx.scene.media.AudioClip;
-//import java.net.MalformedURLException;
-//import java.net.URL;
 import java.util.Random;
 import java.util.logging.*;
 
@@ -36,14 +32,18 @@ public class SFSpaceShooterGame extends GameWorld {
             "MR_FACE_GUY_Static_Floater_MEX.wav", "MR_FACE_GUY_UNiSON!_dARtEd.wav"};
     private MediaPlayer backgroundMediaPlayer;
 
+    private GameContext gameContext;
+
     public SFSpaceShooterGame(int fps, String title){
         super(fps, title);
     }
 
-    public PlayerShip playerShip;
-
     public void initialize(Stage stage) {
         stage.setTitle(getWindowTitle());
+
+        gameContext = new GameContext();
+        gameContext.setSfsGameWorld(this);
+        gameContext.setSoundManager(getSoundManager());
 
         // Create the scene
         setSceneNodes(new Group());
@@ -57,7 +57,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // create aliens
         //
-        // todo: create some aliens
+        createEnemies(gameContext.getCurrentLevel());
 
         // Setup our input handlers
         setupInput(stage);
@@ -101,11 +101,30 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     private void createPlayerShip() {
-        playerShip = new PlayerShip(getSoundManager(), getGameSurface(), getSpriteManager(), this);
+        PlayerShip playerShip = new PlayerShip(gameContext);
         getSpriteManager().addSprites(playerShip);
         getSceneNodes().getChildren().add(0, playerShip.node);
-
+        gameContext.setPlayerShip(playerShip);
     }
+
+    private void createNextEnemyWave() {
+        int nextLevel = gameContext.getCurrentLevel() + 1;
+        createEnemies(nextLevel);
+        gameContext.setCurrentLevel(nextLevel);
+    }
+
+    private void createEnemies(int waveLevel) {
+        // todo: add level logic, right now I will just create one
+
+        // todo: level 0 only for now
+        //
+        Enemy enemy = new Enemy(gameContext);
+        gameContext.getEnemies().add(enemy);
+        getSpriteManager().addSprites(enemy);
+        getSceneNodes().getChildren().add(enemy.node);
+    }
+
+
 
     @Override
     protected void handleUpdate(Sprite sprite) {
@@ -118,8 +137,6 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // todo: implement checks for player colliding with enemies
         // todo: implement checks for missiles colliding with enemies
-
-
 
         return super.handleCollision(spriteA, spriteB);
     }
@@ -135,6 +152,7 @@ public class SFSpaceShooterGame extends GameWorld {
             public void handle(KeyEvent event) {
                 // todo: Handle thrust
 
+                PlayerShip playerShip = gameContext.getPlayerShip();
 
                 switch (event.getCode()) {
                     case ESCAPE:

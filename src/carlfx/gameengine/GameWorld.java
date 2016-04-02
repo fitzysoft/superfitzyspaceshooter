@@ -87,7 +87,7 @@ public abstract class GameWorld {
                         updateSprites();
 
                         // check for collision
-                        checkCollisions();
+                        //checkCollisions();
 
                         // removed dead things
                         cleanupSprites();
@@ -144,22 +144,22 @@ public abstract class GameWorld {
      * passing it to the handleCollision()
      * method. The derived class should override handleCollision() method.
      */
-    protected void checkCollisions() {
-        // check other sprite's collisions
-        spriteManager.resetCollisionsToCheck();
-        // check each sprite against other sprite objects.
-        for (Sprite spriteA : spriteManager.getCollisionsToCheck()) {
-            for (Sprite spriteB : spriteManager.getAllSprites()) {
-                if (handleCollision(spriteA, spriteB)) {
-                    // The break helps optimize the collisions
-                    //  The break statement means one object only hits another
-                    // object as opposed to one hitting many objects.
-                    // To be more accurate comment out the break statement.
-                    break;
-                }
-            }
-        }
-    }
+//    protected void checkCollisions() {
+//        // check other sprite's collisions
+//        spriteManager.resetCollisionsToCheck();
+//        // check each sprite against other sprite objects.
+//        for (Sprite spriteA : spriteManager.getCollisionsToCheck()) {
+//            for (Sprite spriteB : spriteManager.getAllSprites()) {
+//                if (handleCollision(spriteA, spriteB)) {
+//                    // The break helps optimize the collisions
+//                    //  The break statement means one object only hits another
+//                    // object as opposed to one hitting many objects.
+//                    // To be more accurate comment out the break statement.
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
     /**
      * When two objects collide this method can handle the passed in sprite

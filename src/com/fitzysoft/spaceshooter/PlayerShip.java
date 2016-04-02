@@ -116,7 +116,7 @@ public class PlayerShip extends Sprite {
                 double deltaY = Math.sin((node.getRotate() - 90) * Constants.degToRConst) * shipAccel;
 
                 // We have a maximum speed, so lets work out how fast we would be going. Shout out to Pythagorus!
-                speed = Math.sqrt((shipXSpeed + deltaX)*(shipXSpeed + deltaX) + (shipYSpeed + deltaY)*(shipYSpeed + deltaY));
+                speed = Math.sqrt((shipXSpeed + deltaX) * (shipXSpeed + deltaX) + (shipYSpeed + deltaY) * (shipYSpeed + deltaY));
                 // If it is not too fast then we can thrust in the desired direction
                 if (speed < maxShipSpeed) {
                     shipXSpeed += deltaX;
@@ -126,8 +126,8 @@ public class PlayerShip extends Sprite {
                 } else {
                     // we are maxed out.  We should drift towards the new direction.
                     //
-                    shipXSpeed = (shipXSpeed + deltaX) * shipSpeed/speed;
-                    shipYSpeed = (shipYSpeed + deltaY) * shipSpeed/speed;
+                    shipXSpeed = (shipXSpeed + deltaX) * shipSpeed / speed;
+                    shipYSpeed = (shipYSpeed + deltaY) * shipSpeed / speed;
                 }
                 break;
             case PLAYER_THRUST_BACK:
@@ -137,8 +137,8 @@ public class PlayerShip extends Sprite {
                     shipXSpeed = shipYSpeed = shipSpeed = 0;
                 } else {
                     // and drift tw
-                    shipXSpeed = shipXSpeed * (speed/shipSpeed);
-                    shipYSpeed = shipYSpeed * (speed/shipSpeed);
+                    shipXSpeed = shipXSpeed * (speed / shipSpeed);
+                    shipYSpeed = shipYSpeed * (speed / shipSpeed);
                     shipSpeed = speed;
                 }
         }

@@ -1,9 +1,6 @@
 package com.fitzysoft.spaceshooter;
 
-import carlfx.gameengine.GameWorld;
-import carlfx.gameengine.SoundManager;
 import carlfx.gameengine.Sprite;
-import carlfx.gameengine.SpriteManager;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -57,11 +54,31 @@ public class Enemy extends Sprite {
 
         // rotate for groovy effect
         //
-        if (deltaX > 0) {
-            node.setRotate(node.getRotate() + spin);
-        } else {
-            node.setRotate(node.getRotate() - spin);
+        node.setRotate(node.getRotate() + ((deltaX > 0) ? spin : (spin * -1)));
+
+        // Check if we hit the player ship
+        //
+        if (simpleCollisionCheck(gameContext.getPlayerShip())) {
+            logger.info("We hit the player!!!");
         }
-        //node.setRotate( node.getRotate() + spin ); //+ deltaX > 0 ? spin : spin*-1);
+    }
+
+    public void explode() {
+        // todo: play sound
+        // todo: animate explosion
+        // todo: remove from scene after animation completes
+        logger.info("Enemy goes kaboom!");
+        gameContext.getEnemies().remove(this);
+
+        // removes from the gameworld sprite manager (which I may be removing)
+        handleDeath(gameContext.getSfsGameWorld());
+
+        // let the game object know about the event
+        //
+        gameContext.getSfsGameWorld().enemyShot(this);
+
+        // remove from the scene
+        // todo: we would really want to do this after the death animation completes
+        gameContext.getSfsGameWorld().getSceneNodes().getChildren().removeAll(node);
     }
 }

@@ -3,6 +3,7 @@ package carlfx.gameengine;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.shape.Circle;
+import java.util.logging.*;
 
 /**
  * The Sprite class represents a image or node to be displayed.
@@ -15,6 +16,8 @@ import javafx.scene.shape.Circle;
  * @author cdea
  */
 public abstract class Sprite {
+
+    private static Logger logger = Logger.getLogger("carlfx.gameengine");
 
     /**
      * Current display node
@@ -69,6 +72,22 @@ public abstract class Sprite {
         double minDist = otherSphere.getRadius() + thisSphere.getRadius();
 
         return (distance < minDist);
+    }
+
+    // JF: I want a much simpler collision detection
+    public boolean simpleCollisionCheck(Sprite other) {
+        Point2D topLeft = node.localToScene(0,0);
+        Point2D otherTopLeft = other.node.localToScene(0, 0);
+        //logger.info("topLeft: " + topLeft.toString());
+        //logger.info("otherTopLeft: " + otherTopLeft.toString());
+
+        boolean misses = topLeft.getX() + node.getBoundsInLocal().getWidth() < otherTopLeft.getX() ||
+                topLeft.getX() > otherTopLeft.getX() +other.node.getBoundsInLocal().getWidth() ||
+                topLeft.getY() + node.getBoundsInLocal().getHeight() < otherTopLeft.getY() ||
+                topLeft.getY() > otherTopLeft.getY() + node.getBoundsInLocal().getHeight();
+
+        //logger.info("Misses == " + misses);
+        return !misses;
     }
 
     public void handleDeath(GameWorld gameWorld) {

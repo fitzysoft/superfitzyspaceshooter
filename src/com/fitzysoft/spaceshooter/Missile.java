@@ -17,7 +17,7 @@ public class Missile extends Sprite {
 
     // todo: I have repeated myself
     // close enough?
-    private static final double missileSpeed = 32;
+    private static final double missileSpeed = 48;
     private GameContext gameContext;
     private double angle;
     private double speedX;
@@ -47,13 +47,30 @@ public class Missile extends Sprite {
 
     }
 
+    private boolean outOfBounds() {
+        Scene scene = gameContext.getSfsGameWorld().getGameSurface();
+        return (speedX < 0 && node.getTranslateX() < 0) ||
+                (speedX > 0 && node.getTranslateX() > scene.getWidth() - node.getBoundsInLocal().getWidth()) ||
+                (speedY < 0 && node.getTranslateY() < 0) ||
+                (speedY > 0 && node.getTranslateY() > scene.getHeight() - node.getBoundsInLocal().getHeight());
+    }
+
     @Override
     public void update() {
-        Scene scene = gameContext.getSfsGameWorld().getGameSurface();
-        if ((speedX < 0 && node.getTranslateX() < 0) ||
-            (speedX > 0 && node.getTranslateX() > scene.getWidth() - node.getBoundsInLocal().getWidth()) ||
-            (speedY < 0 && node.getTranslateY() < 0) ||
-            (speedY > 0 && node.getTranslateY() > scene.getHeight() - node.getBoundsInLocal().getHeight())) {
+        node.setTranslateX(node.getTranslateX() + speedX);
+        node.setTranslateY(node.getTranslateY()+speedY);
+        boolean hitem = false;
+        for (Enemy enemy: gameContext.getEnemies()) {
+            if (simpleCollisionCheck(enemy)) {
+                // todo: blow up enemy
+                enemy.explode();
+                hitem = true;
+                break;
+            }
+        }
+
+        // Check if we go off screen
+        if (hitem || outOfBounds()) {
 
             GameWorld gameWorld = gameContext.getSfsGameWorld();
 
@@ -65,8 +82,8 @@ public class Missile extends Sprite {
             gameWorld.getSceneNodes().getChildren().removeAll(node);
         }
 
-        node.setTranslateX(node.getTranslateX()+speedX);
-        node.setTranslateY(node.getTranslateY()+speedY);
+
+
 
         // todo : collision stuff (maybe in gameworld)
     }

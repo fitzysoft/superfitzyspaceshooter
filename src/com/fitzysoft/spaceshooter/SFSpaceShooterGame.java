@@ -24,6 +24,7 @@ import java.util.logging.*;
 public class SFSpaceShooterGame extends GameWorld {
 
     private static Logger logger = Logger.getLogger("com.fitzysoft.sfs");
+
     private Random rng = new Random();
     private String[] kaisCoolBeats = {"sfssong.wav", "MR_FACE_GUY_Citrus_Game.wav", "MR_FACE_GUY_DD1_X.wav",
             "MR_FACE_GUY_Dogestep_1.wav", "MR_FACE_GUY_Geyser.wav", "MR_FACE_GUY_Level_HEX.wav",
@@ -40,6 +41,8 @@ public class SFSpaceShooterGame extends GameWorld {
 
     public void initialize(Stage stage) {
         stage.setTitle(getWindowTitle());
+
+        logger.setLevel(Level.WARNING);
 
         gameContext = new GameContext();
         gameContext.setSfsGameWorld(this);
@@ -75,6 +78,21 @@ public class SFSpaceShooterGame extends GameWorld {
     public void quit() {
         Platform.exit();
         System.exit(0);
+    }
+
+    public void enemyShot(Enemy enemy) {
+        // todo: bump the score
+
+        // todo: if no enemies left start the next wave
+        //
+        if (gameContext.getEnemies().isEmpty()) {
+            gameContext.setCurrentLevel(gameContext.getCurrentLevel()+1);
+            createEnemies(gameContext.getCurrentLevel());
+        }
+    }
+
+    public void playerHit() {
+        // todo: lose life
     }
 
     // very much a work in progress - will likely shift some of this to the SoundManager class
@@ -118,10 +136,14 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // todo: level 0 only for now
         //
-        Enemy enemy = new Enemy(gameContext);
-        gameContext.getEnemies().add(enemy);
-        getSpriteManager().addSprites(enemy);
-        getSceneNodes().getChildren().add(enemy.node);
+
+        for (int i = 0; i < waveLevel; ++i) {
+            Enemy enemy = new Enemy(gameContext);
+            gameContext.getEnemies().add(enemy);
+            getSpriteManager().addSprites(enemy);
+            getSceneNodes().getChildren().add(enemy.node);
+        }
+
     }
 
 
@@ -132,12 +154,13 @@ public class SFSpaceShooterGame extends GameWorld {
         sprite.update();
     }
 
+    // todo: remove below, refactor super class
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
 
         // todo: implement checks for player colliding with enemies
         // todo: implement checks for missiles colliding with enemies
-
+        logger.info("Collision detected");
         return super.handleCollision(spriteA, spriteB);
     }
 

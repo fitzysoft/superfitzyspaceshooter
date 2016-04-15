@@ -50,7 +50,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // Create the scene
         setSceneNodes(new Group());
-        setGameSurface(new Scene(getSceneNodes(), 1024, 768));
+        setGameSurface(new Scene(getSceneNodes(), Constants.screenWidth, Constants.screenHeight));
         getGameSurface().setFill(Color.WHITE);
         stage.setScene(getGameSurface());
         stage.setFullScreen(true);
@@ -137,7 +137,7 @@ public class SFSpaceShooterGame extends GameWorld {
         // todo: level 0 only for now
         //
 
-        for (int i = 0; i < waveLevel; ++i) {
+        for (int i = 0; i < waveLevel + 1; ++i) {
             Enemy enemy = new Enemy(gameContext);
             gameContext.getEnemies().add(enemy);
             getSpriteManager().addSprites(enemy);
@@ -145,7 +145,6 @@ public class SFSpaceShooterGame extends GameWorld {
         }
 
     }
-
 
 
     @Override

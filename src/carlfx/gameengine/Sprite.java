@@ -78,15 +78,12 @@ public abstract class Sprite {
     public boolean simpleCollisionCheck(Sprite other) {
         Point2D topLeft = node.localToScene(0,0);
         Point2D otherTopLeft = other.node.localToScene(0, 0);
-        //logger.info("topLeft: " + topLeft.toString());
-        //logger.info("otherTopLeft: " + otherTopLeft.toString());
 
         boolean misses = topLeft.getX() + node.getBoundsInLocal().getWidth() < otherTopLeft.getX() ||
                 topLeft.getX() > otherTopLeft.getX() +other.node.getBoundsInLocal().getWidth() ||
                 topLeft.getY() + node.getBoundsInLocal().getHeight() < otherTopLeft.getY() ||
-                topLeft.getY() > otherTopLeft.getY() + node.getBoundsInLocal().getHeight();
+                topLeft.getY() > otherTopLeft.getY() + other.node.getBoundsInLocal().getHeight();
 
-        //logger.info("Misses == " + misses);
         return !misses;
     }
 

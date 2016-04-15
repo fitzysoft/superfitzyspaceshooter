@@ -16,11 +16,14 @@ public class Enemy extends Sprite {
     private static final double enemyRotate = 3.0;
     private static final int enemySpeed = 7;
 
+    enum State {ALIVE, DYING, DEAD };
+    private State state;
+
     private GameContext gameContext;
 
-    // todo: Let's have a context object that contains the soundManager, scene, spriteManager etc...
     public Enemy(GameContext gameContext) {
         this.gameContext = gameContext;
+        this.state = State.ALIVE;
 
         // Load one image.
         ImageView imageView = new ImageView();
@@ -28,14 +31,38 @@ public class Enemy extends Sprite {
         imageView.setCache(true);
         node = imageView;
 
-        Scene scene = gameContext.getSfsGameWorld().getGameSurface();
+        positionEnemy();
 
-        // todo: make it within a random location but not too close
-        //
-        node.setTranslateX(scene.getWidth());
-        node.setTranslateY(scene.getHeight());
         //shipYSpeed = shipXSpeed = 1.5;
         node.setVisible(true);
+    }
+
+    private void positionEnemy() {
+
+        // Currently I make sure you are off to the side at a random location
+        //
+        Scene scene = gameContext.getSfsGameWorld().getGameSurface();
+
+        double randomXOffset = Math.random() * scene.getWidth();
+        double randomYOffset = Math.random() * scene.getHeight();
+
+        double x;
+        double y;
+
+        if (randomXOffset < scene.getWidth()/2) {
+            x = 0 - randomXOffset;
+        } else {
+            x = scene.getWidth() + randomXOffset;
+        }
+
+        if (randomYOffset < scene.getHeight()/2) {
+            y = 0 - randomYOffset;
+        } else {
+            y = scene.getHeight() + randomYOffset;
+        }
+
+        node.setTranslateX(x);
+        node.setTranslateY(y);
     }
 
     @Override
@@ -56,11 +83,31 @@ public class Enemy extends Sprite {
         //
         node.setRotate(node.getRotate() + ((deltaX > 0) ? spin : (spin * -1)));
 
-        // Check if we hit the player ship
-        //
-        if (simpleCollisionCheck(gameContext.getPlayerShip())) {
-            logger.info("We hit the player!!!");
+        switch (state) {
+            case ALIVE:
+                // Check if we hit the player ship
+                //
+                if (simpleCollisionCheck(gameContext.getPlayerShip())) {
+                    logger.info("We hit the player!!!");
+                    // todo: Destroy the player or reduce health etc...
+                }
+                break;
+            case DEAD:
+                // removes from the gameworld sprite manager (which I may be removing)
+                handleDeath(gameContext.getSfsGameWorld());
+
+                gameContext.getEnemies().remove(this);  // todo: appears that this line is causing the concurrent change issue
+                                                        // - perhaps I need to add in a 'dead enemies' list and override the GameWorld 'cleanUpSprites'
+                                                        // method to remove dead enemies from the enemies list
+                gameContext.getSfsGameWorld().getSceneNodes().getChildren().removeAll(node);
+
+                // let the game object know about the event - todo - shift this to the 'dying' state
+                //
+                gameContext.getSfsGameWorld().enemyShot(this);
+            default:
+                // nada
         }
+
     }
 
     public void explode() {
@@ -68,17 +115,13 @@ public class Enemy extends Sprite {
         // todo: animate explosion
         // todo: remove from scene after animation completes
         logger.info("Enemy goes kaboom!");
-        gameContext.getEnemies().remove(this);
+        //gameContext.getEnemies().remove(this);
 
-        // removes from the gameworld sprite manager (which I may be removing)
-        handleDeath(gameContext.getSfsGameWorld());
-
-        // let the game object know about the event
-        //
-        gameContext.getSfsGameWorld().enemyShot(this);
+        // todo: We will go to a dying state where we are exploding
+        state = State.DEAD;
 
         // remove from the scene
         // todo: we would really want to do this after the death animation completes
-        gameContext.getSfsGameWorld().getSceneNodes().getChildren().removeAll(node);
+        //gameContext.getSfsGameWorld().getSceneNodes().getChildren().removeAll(node);
     }
 }

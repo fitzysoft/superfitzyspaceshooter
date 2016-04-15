@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -16,6 +17,9 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import java.util.Random;
 import java.util.logging.*;
+// for the background - will be refactored
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 
 /**
@@ -35,6 +39,10 @@ public class SFSpaceShooterGame extends GameWorld {
 
     private GameContext gameContext;
 
+    // hacking around a gap in my knowledge
+    private boolean resizedBackground = false;
+    private ImageView background;
+
     public SFSpaceShooterGame(int fps, String title){
         super(fps, title);
     }
@@ -51,9 +59,11 @@ public class SFSpaceShooterGame extends GameWorld {
         // Create the scene
         setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), Constants.screenWidth, Constants.screenHeight));
-        getGameSurface().setFill(Color.WHITE);
+        //getGameSurface().setFill(Color.WHITE);
         stage.setScene(getGameSurface());
         stage.setFullScreen(true);
+
+        setupBackground();
 
         // create spaceship
         createPlayerShip();
@@ -118,10 +128,48 @@ public class SFSpaceShooterGame extends GameWorld {
         logger.info("called play");
     }
 
+    // For now it is a static background, but we will end making a scrolling background
+    //
+    private void setupBackground() {
+        background = new ImageView();
+        // image obtained from : https://d1o50x50snmhul.cloudfront.net/wp-content/uploads/2016/04/ann11053e2-1200x800.jpg
+        background.setImage(new Image(getClass().getClassLoader().getResource("ann11053e2-1200x800.png").toExternalForm(), true));
+        background.setCache(true);
+        background.setFitWidth(getGameSurface().getWidth());
+        background.setFitHeight(getGameSurface().getHeight());
+        background.setSmooth(true);
+        background.setVisible(true);
+        getSceneNodes().getChildren().add(Constants.BACKGROUND_NODE_LEVEL, background);
+        getGameSurface().widthProperty().addListener((observable, oldValue, newValue) -> {
+            logger.info("Width changed from " + oldValue + "to" + newValue);
+            background.setFitWidth((double) newValue);
+        });
+        getGameSurface().heightProperty().addListener((observable, oldValue, newValue) -> {
+            logger.info("Height changed from " + oldValue + "to" + newValue);
+            background.setFitHeight((double) newValue);
+        });
+
+//
+//        BackgroundImage backgroundImage = new BackgroundImage(
+//                new Image(getClass().getClassLoader().getResource("ann11053e2-1200x800.png").toExternalForm(), true),
+//                        BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+//                        BackgroundSize.DEFAULT);
+//        getSceneNodes().getChildren().add(backgroundImage);
+
+//        //getGameSurface().getRoot().get  .setBackground(new Background(backgroundImage));
+
+
+//        // todo: this feels kind of ugly - I shouldn't have to use CSS
+//        String imageUrl = getClass().getClassLoader().getResource("ann11053e2-1200x800.png").toExternalForm();
+//        getGameSurface().getRoot().setStyle("-fx-background-image: url('" + imageUrl + "'); " +
+//                "-fx-background-position: center center; " +
+//                "-fx-background-repeat: stretch;");
+    }
+
     private void createPlayerShip() {
         PlayerShip playerShip = new PlayerShip(gameContext);
         getSpriteManager().addSprites(playerShip);
-        getSceneNodes().getChildren().add(0, playerShip.node);
+        getSceneNodes().getChildren().add(Constants.PLAYERSHIP_NODE_LEVEL, playerShip.node);
         gameContext.setPlayerShip(playerShip);
     }
 
@@ -149,6 +197,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
     @Override
     protected void handleUpdate(Sprite sprite) {
+
         // advance object
         sprite.update();
     }

@@ -83,7 +83,7 @@ public class PlayerShip extends Sprite {
         Missile missile = new Missile(gameContext, scenePoint, node.getRotate());
         // todo: trying to control z-order - has to be via the order the nodes are in the scene graph
         // there is currently no background image, this will have to be tweaked when we do
-        gameContext.getSfsGameWorld().getSceneNodes().getChildren().add(0, missile.node);
+        gameContext.getSfsGameWorld().getSceneNodes().getChildren().add(Constants.MISSILE_NODE_LEVEL, missile.node);
         gameContext.getSfsGameWorld().getSpriteManager().addSprites(missile);
     }
 

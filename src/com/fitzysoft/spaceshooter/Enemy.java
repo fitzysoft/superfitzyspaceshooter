@@ -21,7 +21,7 @@ public class Enemy extends Sprite {
     private State state;
 
     // frame rate should be 30 fps
-    private static int framesToFadeOut = 90;
+    private static int framesToFadeOut = 60;
     private int fadeOutFrameCount = 0;
 
     private GameContext gameContext;
@@ -79,7 +79,7 @@ public class Enemy extends Sprite {
 
         // todo: make it some cool effect, for now I might just play with the transparency
         // todo: I am experimenting here
-        SuperFitzySpriteEffects.explodeEffect1(node, fadeOutFrameCount);
+        SuperFitzySpriteEffects.blurryFadeOut(node, fadeOutFrameCount, framesToFadeOut);
     }
 
 

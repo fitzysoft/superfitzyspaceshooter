@@ -180,7 +180,7 @@ public class PlayerShip extends Sprite {
 
         // todo: make it some cool effect, for now I might just play with the transparency
         // todo: I am experimenting here
-        SuperFitzySpriteEffects.explodeEffect1(node, fadeOutFrameCount);
+        SuperFitzySpriteEffects.blurryFadeOut(node, fadeOutFrameCount, fadeOutFrameCount);
     }
 
     @Override

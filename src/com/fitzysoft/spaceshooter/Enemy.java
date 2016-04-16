@@ -30,11 +30,11 @@ public class Enemy extends Sprite {
         imageView.setImage(new Image(getClass().getClassLoader().getResource("enemy1.png").toExternalForm(), true));
         imageView.setCache(true);
         node = imageView;
-
         positionEnemy();
-
-        //shipYSpeed = shipXSpeed = 1.5;
         node.setVisible(true);
+
+        gameContext.getSoundManager().loadSoundEffects("enemy_death", getClass().getClassLoader().getResource(
+                "enemy_explode.wav"));
     }
 
     private void positionEnemy() {
@@ -89,7 +89,7 @@ public class Enemy extends Sprite {
                 //
                 if (simpleCollisionCheck(gameContext.getPlayerShip())) {
                     logger.info("We hit the player!!!");
-                    // todo: Destroy the player or reduce health etc...
+                    gameContext.getPlayerShip().enemyHitMe();
                 }
                 break;
             case DYING:
@@ -106,17 +106,15 @@ public class Enemy extends Sprite {
     }
 
     public void explode() {
-        // todo: play sound
+        //logger.info("Enemy goes kaboom!");
+        // play sound
+        gameContext.getSoundManager().playSound("enemy_death");
+
         // todo: animate explosion
         // todo: remove from scene after animation completes
-        logger.info("Enemy goes kaboom!");
-        //gameContext.getEnemies().remove(this);
 
         // todo: We will go to a dying state where we are exploding
         state = State.DEAD;
 
-        // remove from the scene
-        // todo: we would really want to do this after the death animation completes
-        //gameContext.getSfsGameWorld().getSceneNodes().getChildren().removeAll(node);
     }
 }

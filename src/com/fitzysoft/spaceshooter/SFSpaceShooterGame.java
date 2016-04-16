@@ -1,7 +1,6 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.GameWorld;
-//import carlfx.gameengine.SoundManager;
 import carlfx.gameengine.Sprite;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,6 +18,8 @@ import java.util.logging.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 
+// todo: Address the deprecation warning "This application, or a library it uses, is using the deprecated Carbon Component Manager for hosting Audio Units. Support for this will be removed in a future release. Also, this makes the host incompatible with version 3 audio units. Please transition to the API's in AudioComponent.h."
+// looks like it is at the C level
 
 /**
  * Created by James FitzGerald on 11/2/15.

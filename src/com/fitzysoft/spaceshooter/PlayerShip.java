@@ -26,6 +26,9 @@ public class PlayerShip extends Sprite {
 
     private GameContext gameContext;
 
+    enum PlayerState {ALIVE, DYING, DEAD};
+    private PlayerState state = PlayerState.ALIVE;
+
     // todo: refactor this interface to take a context object for the various managers
     //
     public PlayerShip(GameContext gameContext) {
@@ -37,6 +40,7 @@ public class PlayerShip extends Sprite {
         soundManager.loadSoundEffects("thrust", getClass().getClassLoader().getResource("thrust.wav"));
         soundManager.loadSoundEffects("slow", getClass().getClassLoader().getResource("slow.wav"));
         soundManager.loadSoundEffects("fire", getClass().getClassLoader().getResource("fire.wav"));
+        soundManager.loadSoundEffects("player_death", getClass().getClassLoader().getResource("player_death.wav"));
 
         // Load one image.
         ImageView imageView = new ImageView();
@@ -85,6 +89,15 @@ public class PlayerShip extends Sprite {
         thrustDirection = thrust;
         gameContext.getSoundManager().playSound(
                 thrust == PlayerThrustDirection.PLAYER_THRUST_FWD ? "thrust" : "slow");
+    }
+
+    public void enemyHitMe() {
+        if (state == PlayerState.ALIVE) {
+            gameContext.getSoundManager().playSound("player_death");
+            // todo: go into a 'dying' state or take damage
+            state = PlayerState.DYING;
+        }
+
     }
 
 

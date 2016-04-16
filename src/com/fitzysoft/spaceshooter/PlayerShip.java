@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import carlfx.gameengine.Sprite;
 import javafx.scene.image.ImageView;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.*;
 
@@ -177,10 +178,22 @@ public class PlayerShip extends Sprite {
         if (fadeOutFrameCount >= framesToFadeOut) {
             state = PlayerState.DEAD;
         }
-
         // todo: make it some cool effect, for now I might just play with the transparency
         // todo: I am experimenting here
         SuperFitzySpriteEffects.blurryFadeOut(node, fadeOutFrameCount, fadeOutFrameCount);
+    }
+
+    private void killEnemies() {
+        ArrayList<Enemy> enemies = gameContext.getEnemyWave().getEnemies();
+        for (int i = 0; i < enemies.size(); i++) {
+            enemies.get(i).explode();
+        }
+    }
+
+    private void playerDead() {
+        state = PlayerState.ALIVE;
+        node.setOpacity(1.0);
+        killEnemies();
     }
 
     @Override
@@ -202,6 +215,7 @@ public class PlayerShip extends Sprite {
 
             case DEAD:
             default:
+                playerDead();
                 break;
         }
     }

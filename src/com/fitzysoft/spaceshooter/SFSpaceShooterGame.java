@@ -20,6 +20,10 @@ import javafx.scene.image.Image;
 
 // todo: Address the deprecation warning "This application, or a library it uses, is using the deprecated Carbon Component Manager for hosting Audio Units. Support for this will be removed in a future release. Also, this makes the host incompatible with version 3 audio units. Please transition to the API's in AudioComponent.h."
 // looks like it is at the C level
+// todo: Add game-over logic, restart etc...
+// todo: Add scoring
+// todo: Consider refactoring Kai's cool beats into its own class
+// todo: Introduce some very cool particle physic based explosion effects
 
 /**
  * Created by James FitzGerald on 11/2/15.

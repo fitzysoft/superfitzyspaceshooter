@@ -7,10 +7,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.event.EventHandler;
@@ -70,7 +68,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // create aliens
         //
-        createEnemies(gameContext.getCurrentLevel());
+        createNextEnemyWave();
 
         // Setup our input handlers
         setupInput(stage);
@@ -90,15 +88,15 @@ public class SFSpaceShooterGame extends GameWorld {
         System.exit(0);
     }
 
-    public void enemyShot(Enemy enemy) {
+    public void enemyShot() {
         // todo: bump the score
 
         // todo: if no enemies left start the next wave
         //
-        if (gameContext.getEnemies().isEmpty()) {
-            gameContext.setCurrentLevel(gameContext.getCurrentLevel()+1);
-            createEnemies(gameContext.getCurrentLevel());
-        }
+//        if (gameContext.getEnemies().isEmpty()) {
+//            gameContext.setCurrentLevel(gameContext.getCurrentLevel()+1);
+//            createEnemies(gameContext.getCurrentLevel());
+//        }
     }
 
     public void playerHit() {
@@ -175,24 +173,24 @@ public class SFSpaceShooterGame extends GameWorld {
 
     private void createNextEnemyWave() {
         int nextLevel = gameContext.getCurrentLevel() + 1;
-        createEnemies(nextLevel);
+        gameContext.enemyWave.createEnemies(nextLevel);
         gameContext.setCurrentLevel(nextLevel);
     }
 
-    private void createEnemies(int waveLevel) {
-        // todo: add level logic, right now I will just create one
-
-        // todo: level 0 only for now
-        //
-
-        for (int i = 0; i < waveLevel + 1; ++i) {
-            Enemy enemy = new Enemy(gameContext);
-            gameContext.getEnemies().add(enemy);
-            getSpriteManager().addSprites(enemy);
-            getSceneNodes().getChildren().add(enemy.node);
-        }
-
-    }
+//    private void createEnemies(int waveLevel) {
+//        // todo: add level logic, right now I will just create one
+//
+//        // todo: level 0 only for now
+//        //
+//
+//        for (int i = 0; i < waveLevel + 1; ++i) {
+//            Enemy enemy = new Enemy(gameContext);
+//            gameContext.getEnemies().add(enemy);
+//            getSpriteManager().addSprites(enemy);
+//            getSceneNodes().getChildren().add(enemy.node);
+//        }
+//
+//    }
 
 
     @Override
@@ -212,7 +210,16 @@ public class SFSpaceShooterGame extends GameWorld {
         return super.handleCollision(spriteA, spriteB);
     }
 
-
+    @Override
+    protected void cleanupSprites() {
+        // todo : create a class to manage enemies in general
+        //gameContext.getEnemies().removeAll(gameContext.getDeadEnemies());
+        gameContext.getEnemyWave().cleanUpEnemies();
+        if (gameContext.getEnemyWave().allDead()) {
+            createNextEnemyWave();
+        }
+        super.cleanupSprites();
+    }
 
     // todo: Do I have to worry about thread safety? I mean can input events and handleUpdate be called at the same time?
     private void setupInput(Stage primaryStage) {

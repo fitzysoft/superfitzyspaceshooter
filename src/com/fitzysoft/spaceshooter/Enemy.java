@@ -92,22 +92,17 @@ public class Enemy extends Sprite {
                     // todo: Destroy the player or reduce health etc...
                 }
                 break;
+            case DYING:
+                // todo: split it apart
+                break;
             case DEAD:
                 // removes from the gameworld sprite manager (which I may be removing)
                 handleDeath(gameContext.getSfsGameWorld());
+                gameContext.enemyWave.destroyEnemy(this);
 
-                gameContext.getEnemies().remove(this);  // todo: appears that this line is causing the concurrent change issue
-                                                        // - perhaps I need to add in a 'dead enemies' list and override the GameWorld 'cleanUpSprites'
-                                                        // method to remove dead enemies from the enemies list
-                gameContext.getSfsGameWorld().getSceneNodes().getChildren().removeAll(node);
-
-                // let the game object know about the event - todo - shift this to the 'dying' state
-                //
-                gameContext.getSfsGameWorld().enemyShot(this);
             default:
                 // nada
         }
-
     }
 
     public void explode() {

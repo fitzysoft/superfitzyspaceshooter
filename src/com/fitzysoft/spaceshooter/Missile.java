@@ -60,9 +60,8 @@ public class Missile extends Sprite {
         node.setTranslateX(node.getTranslateX() + speedX);
         node.setTranslateY(node.getTranslateY()+speedY);
         boolean hitem = false;
-        for (Enemy enemy: gameContext.getEnemies()) {
+        for (Enemy enemy: gameContext.enemyWave.getEnemies()) {
             if (simpleCollisionCheck(enemy)) {
-                // todo: blow up enemy
                 enemy.explode();
                 hitem = true;
                 break;
@@ -71,20 +70,13 @@ public class Missile extends Sprite {
 
         // Check if we go off screen
         if (hitem || outOfBounds()) {
-
             GameWorld gameWorld = gameContext.getSfsGameWorld();
-
             // remove from the sprite manager
             handleDeath(gameWorld);
-
             // remove from the scene
             //
             gameWorld.getSceneNodes().getChildren().removeAll(node);
         }
 
-
-
-
-        // todo : collision stuff (maybe in gameworld)
     }
 }

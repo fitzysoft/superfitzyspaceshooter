@@ -11,7 +11,11 @@ public class GameContext {
     SFSpaceShooterGame sfsGameWorld;
     SoundManager soundManager;
     PlayerShip playerShip;
-    ArrayList<Enemy> enemies;
+
+    //    ArrayList<Enemy> enemies;
+//    ArrayList<Enemy> deadEnemies;   // we have to clean them up after we have done all the sprite updates
+    EnemyWave enemyWave;
+
     int currentLevel;
 
     public int getCurrentLevel() {
@@ -23,12 +27,12 @@ public class GameContext {
     }
 
     public GameContext() {
-        enemies = new ArrayList<>();
+        enemyWave = new EnemyWave(this);
         currentLevel = 0;
     }
 
-    public ArrayList<Enemy> getEnemies() {
-        return enemies;
+    public EnemyWave getEnemyWave() {
+        return enemyWave;
     }
 
     public SoundManager getSoundManager() {

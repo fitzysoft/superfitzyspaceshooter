@@ -1,9 +1,6 @@
 package com.fitzysoft.spaceshooter;
 
-import carlfx.gameengine.GameWorld;
 import carlfx.gameengine.SoundManager;
-import carlfx.gameengine.SpriteManager;
-import com.sun.javafx.geom.Vec2d;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -19,12 +16,13 @@ public class PlayerShip extends Sprite {
     private static Logger logger = Logger.getLogger("com.fitzysoft.sfs");
 
     private static final double shipRotate = 8.0;
-    private static final int maxShipSpeed = 32;
+    private static final double maxShipSpeed = 32;
+    private static final double minShipSpeed = 2.5;
     private static final double shipAccel = 1.0;
 
     private double shipXSpeed = 0;
     private double shipYSpeed = 0;
-    private double shipSpeed = 0;
+    private double shipSpeed = minShipSpeed;
 
     private GameContext gameContext;
 
@@ -48,12 +46,9 @@ public class PlayerShip extends Sprite {
 
         Scene scene = gameContext.getSfsGameWorld().getGameSurface();
         node.setTranslateX(scene.getWidth() / 2);
-        node.setTranslateY(scene.getHeight()/2);
-        shipYSpeed = shipXSpeed = 1.5;
-        node.setVisible(true);
+        node.setTranslateY(scene.getHeight() / 2);
 
-        // todo: Consider creating a flipbook of different angles
-        //
+        node.setVisible(true);
     }
 
     public enum PlayerSteerDirection { PLAYER_STEER_LEFT, PLAYER_STEER_STRAIGHT, PLAYER_STEER_RIGHT};
@@ -70,8 +65,7 @@ public class PlayerShip extends Sprite {
 
 
     public enum PlayerThrustDirection {PLAYER_THRUST_OFF, PLAYER_THRUST_FWD, PLAYER_THRUST_BACK};
-    private PlayerThrustDirection thrustDirection = PlayerThrustDirection.PLAYER_THRUST_OFF;
-    private boolean thrustFirstPress = false;
+    private PlayerThrustDirection thrustDirection = PlayerThrustDirection.PLAYER_THRUST_FWD;
 
     public void fire() {
         gameContext.getSoundManager().playSound("fire");
@@ -96,6 +90,11 @@ public class PlayerShip extends Sprite {
 
     @Override
     public void update() {
+
+        if (gameContext.getGameState() == GameContext.GameState.PRE_LEVEL_START) {
+            // do nothing while in this state
+            return;
+        }
 
         // Steer
         switch (steerDirection) {
@@ -133,14 +132,13 @@ public class PlayerShip extends Sprite {
             case PLAYER_THRUST_BACK:
                 // lets slow down
                 speed = shipSpeed - shipAccel;
-                if (speed < 0) {
-                    shipXSpeed = shipYSpeed = shipSpeed = 0;
-                } else {
-                    // and drift tw
-                    shipXSpeed = shipXSpeed * (speed / shipSpeed);
-                    shipYSpeed = shipYSpeed * (speed / shipSpeed);
-                    shipSpeed = speed;
+                if (speed < minShipSpeed) {
+                    speed = minShipSpeed;
                 }
+
+                shipXSpeed = shipXSpeed * (speed / shipSpeed);
+                shipYSpeed = shipYSpeed * (speed / shipSpeed);
+                shipSpeed = speed;
         }
 
         // Check if we hit the edges of the screen

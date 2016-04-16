@@ -8,15 +8,26 @@ import java.util.ArrayList;
  */
 public class GameContext {
 
-    SFSpaceShooterGame sfsGameWorld;
-    SoundManager soundManager;
-    PlayerShip playerShip;
+    private SFSpaceShooterGame sfsGameWorld;
+    private SoundManager soundManager;
+    private PlayerShip playerShip;
 
-    //    ArrayList<Enemy> enemies;
-//    ArrayList<Enemy> deadEnemies;   // we have to clean them up after we have done all the sprite updates
+    enum GameState {PRE_LEVEL_START, LEVEL_STARTED, LEVEL_ENDED, PLAYER_KILLED};
+
+    // todo: make this a property so we can bind to it ??
+    private GameState gameState = GameState.PRE_LEVEL_START;
+
     EnemyWave enemyWave;
 
     int currentLevel;
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
 
     public int getCurrentLevel() {
         return currentLevel;

@@ -37,8 +37,12 @@ public class SFSpaceShooterGame extends GameWorld {
 
     private GameContext gameContext;
 
-    // hacking around a gap in my knowledge
-    private boolean resizedBackground = false;
+    // todo: look for a more elegant approach
+    private boolean widthChanged = false;
+    private boolean heightChanged = false;
+    private boolean levelSetup = false;
+    private int frameCounter = 0;
+
     private ImageView background;
 
     public SFSpaceShooterGame(int fps, String title){
@@ -63,19 +67,33 @@ public class SFSpaceShooterGame extends GameWorld {
 
         setupBackground();
 
-        // create spaceship
-        createPlayerShip();
+//        // load Kai's cool beats
+//        //
+//        playBackgroundMusic();
+    }
 
-        // create aliens
-        //
-        gameContext.enemyWave.createEnemies(gameContext.currentLevel);
+    // Once the screen has resized to fullscreen we will set the level up
+    public void setupLevel() {
+        if (!levelSetup) {
+            // create spaceship
+            createPlayerShip();
 
-        // Setup our input handlers
-        setupInput(stage);
+            // create aliens
+            //
+            gameContext.enemyWave.createEnemies(gameContext.currentLevel);
 
-        // load Kai's cool beats
-        //
-        playBackgroundMusic();
+            // Setup our input handlers
+            setupInput();
+
+            // load Kai's cool beats
+            //
+            playBackgroundMusic();
+
+            // Let's just start the action right now
+            // todo: put in a time lag before starting the action
+            gameContext.setGameState(GameContext.GameState.PRE_LEVEL_START);
+        }
+        levelSetup = true;
     }
 
     Application application;
@@ -136,13 +154,22 @@ public class SFSpaceShooterGame extends GameWorld {
         background.setSmooth(true);
         background.setVisible(true);
         getSceneNodes().getChildren().add(Constants.BACKGROUND_NODE_LEVEL, background);
+
         getGameSurface().widthProperty().addListener((observable, oldValue, newValue) -> {
             logger.info("Width changed from " + oldValue + "to" + newValue);
             background.setFitWidth((double) newValue);
+            widthChanged = true;
+            if (widthChanged && heightChanged) {
+                setupLevel();
+            }
         });
         getGameSurface().heightProperty().addListener((observable, oldValue, newValue) -> {
             logger.info("Height changed from " + oldValue + "to" + newValue);
             background.setFitHeight((double) newValue);
+            heightChanged = true;
+            if (widthChanged && heightChanged) {
+                setupLevel();
+            }
         });
 
 //
@@ -177,7 +204,11 @@ public class SFSpaceShooterGame extends GameWorld {
 
     @Override
     protected void handleUpdate(Sprite sprite) {
-
+        frameCounter++;
+        // if enough frames have passed lets start the action
+        if (frameCounter == Constants.FRAMES_TILL_ACTION) {
+            gameContext.setGameState(GameContext.GameState.LEVEL_STARTED);
+        }
         // advance object
         sprite.update();
     }
@@ -206,7 +237,7 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     // todo: Do I have to worry about thread safety? I mean can input events and handleUpdate be called at the same time?
-    private void setupInput(Stage primaryStage) {
+    private void setupInput() {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {
 
             private boolean firstThrust = false;
@@ -264,8 +295,8 @@ public class SFSpaceShooterGame extends GameWorld {
         };
 
         // Initialize input
-        primaryStage.getScene().setOnKeyPressed(eventHandler);
-        primaryStage.getScene().setOnKeyReleased(eventHandler);
+        getGameSurface().setOnKeyPressed(eventHandler);
+        getGameSurface().setOnKeyReleased(eventHandler);
     }
 
 }

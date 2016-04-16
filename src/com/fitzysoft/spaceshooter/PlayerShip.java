@@ -3,9 +3,13 @@ package com.fitzysoft.spaceshooter;
 import carlfx.gameengine.SoundManager;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.effect.DisplacementMap;
+import javafx.scene.effect.FloatMap;
 import javafx.scene.image.Image;
 import carlfx.gameengine.Sprite;
 import javafx.scene.image.ImageView;
+
+import java.util.Random;
 import java.util.logging.*;
 
 /**
@@ -24,10 +28,14 @@ public class PlayerShip extends Sprite {
     private double shipYSpeed = 0;
     private double shipSpeed = minShipSpeed;
 
+    // frame rate should be 30 fps
+    private static int framesToFadeOut = 90;
+    private int fadeOutFrameCount = 0;
+
     private GameContext gameContext;
 
     enum PlayerState {ALIVE, DYING, DEAD};
-    private PlayerState state = PlayerState.ALIVE;
+    private PlayerState state = PlayerState.ALIVE; // w.i.p
 
     // todo: refactor this interface to take a context object for the various managers
     //
@@ -79,8 +87,6 @@ public class PlayerShip extends Sprite {
                 node.getTranslateY() + node.getBoundsInLocal().getMaxY()/2);
         logger.info("Scene Point " + scenePoint.toString());
         Missile missile = new Missile(gameContext, scenePoint, node.getRotate());
-        // todo: trying to control z-order - has to be via the order the nodes are in the scene graph
-        // there is currently no background image, this will have to be tweaked when we do
         gameContext.getSfsGameWorld().getSceneNodes().getChildren().add(Constants.MISSILE_NODE_LEVEL, missile.node);
         gameContext.getSfsGameWorld().getSpriteManager().addSprites(missile);
     }
@@ -100,15 +106,9 @@ public class PlayerShip extends Sprite {
 
     }
 
-
-    @Override
-    public void update() {
-
-        if (gameContext.getGameState() == GameContext.GameState.PRE_LEVEL_START) {
-            // do nothing while in this state
-            return;
-        }
-
+    // Move ship according to direction, thrust, or brake
+    // check for collisions
+    private void aliveUpdate() {
         // Steer
         switch (steerDirection) {
             case PLAYER_STEER_LEFT:
@@ -170,4 +170,40 @@ public class PlayerShip extends Sprite {
             shipYSpeed = 0;
         }
     }
+
+    // Some cool effect
+    private void dyingUpdate() {
+        fadeOutFrameCount++;
+        if (fadeOutFrameCount >= framesToFadeOut) {
+            state = PlayerState.DEAD;
+        }
+
+        // todo: make it some cool effect, for now I might just play with the transparency
+        // todo: I am experimenting here
+        SuperFitzySpriteEffects.explodeEffect1(node, fadeOutFrameCount);
+    }
+
+    @Override
+    public void update() {
+
+        if (gameContext.getGameState() == GameContext.GameState.PRE_LEVEL_START) {
+            // do nothing while in this state
+            return;
+        }
+
+        switch (state) {
+            case ALIVE:
+                aliveUpdate();
+                break;
+
+            case DYING:
+                dyingUpdate();
+                break;
+
+            case DEAD:
+            default:
+                break;
+        }
+    }
+
 }

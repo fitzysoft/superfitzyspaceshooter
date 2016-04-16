@@ -16,8 +16,13 @@ public class Enemy extends Sprite {
     private static final double enemyRotate = 3.0;
     private static final int enemySpeed = 7;
 
+    // todo: the playership has pretty much the same states, we should consolidate
     enum State {ALIVE, DYING, DEAD };
     private State state;
+
+    // frame rate should be 30 fps
+    private static int framesToFadeOut = 90;
+    private int fadeOutFrameCount = 0;
 
     private GameContext gameContext;
 
@@ -65,6 +70,20 @@ public class Enemy extends Sprite {
         node.setTranslateY(y);
     }
 
+    // Some cool effect
+    private void dyingUpdate() {
+        fadeOutFrameCount++;
+        if (fadeOutFrameCount >= framesToFadeOut) {
+            state = State.DEAD;
+        }
+
+        // todo: make it some cool effect, for now I might just play with the transparency
+        // todo: I am experimenting here
+        SuperFitzySpriteEffects.explodeEffect1(node, fadeOutFrameCount);
+    }
+
+
+
     @Override
     public void update() {
         // todo : make this more dynamic
@@ -90,10 +109,11 @@ public class Enemy extends Sprite {
                 if (simpleCollisionCheck(gameContext.getPlayerShip())) {
                     logger.info("We hit the player!!!");
                     gameContext.getPlayerShip().enemyHitMe();
+                    explode();
                 }
                 break;
             case DYING:
-                // todo: split it apart
+                dyingUpdate();
                 break;
             case DEAD:
                 // removes from the gameworld sprite manager (which I may be removing)
@@ -114,7 +134,7 @@ public class Enemy extends Sprite {
         // todo: remove from scene after animation completes
 
         // todo: We will go to a dying state where we are exploding
-        state = State.DEAD;
+        state = State.DYING;
 
     }
 }

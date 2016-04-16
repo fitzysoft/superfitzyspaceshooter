@@ -68,7 +68,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // create aliens
         //
-        createNextEnemyWave();
+        gameContext.enemyWave.createEnemies(gameContext.currentLevel);
 
         // Setup our input handlers
         setupInput(stage);
@@ -91,12 +91,10 @@ public class SFSpaceShooterGame extends GameWorld {
     public void enemyShot() {
         // todo: bump the score
 
-        // todo: if no enemies left start the next wave
-        //
-//        if (gameContext.getEnemies().isEmpty()) {
-//            gameContext.setCurrentLevel(gameContext.getCurrentLevel()+1);
-//            createEnemies(gameContext.getCurrentLevel());
-//        }
+        // if no enemies left start the next wave
+        if (gameContext.getEnemyWave().allDead()) {
+            gameContext.getEnemyWave().setCreateNextWaveOnNextUpdate();
+        }
     }
 
     public void playerHit() {
@@ -177,22 +175,6 @@ public class SFSpaceShooterGame extends GameWorld {
         gameContext.setCurrentLevel(nextLevel);
     }
 
-//    private void createEnemies(int waveLevel) {
-//        // todo: add level logic, right now I will just create one
-//
-//        // todo: level 0 only for now
-//        //
-//
-//        for (int i = 0; i < waveLevel + 1; ++i) {
-//            Enemy enemy = new Enemy(gameContext);
-//            gameContext.getEnemies().add(enemy);
-//            getSpriteManager().addSprites(enemy);
-//            getSceneNodes().getChildren().add(enemy.node);
-//        }
-//
-//    }
-
-
     @Override
     protected void handleUpdate(Sprite sprite) {
 
@@ -212,10 +194,12 @@ public class SFSpaceShooterGame extends GameWorld {
 
     @Override
     protected void cleanupSprites() {
-        // todo : create a class to manage enemies in general
-        //gameContext.getEnemies().removeAll(gameContext.getDeadEnemies());
         gameContext.getEnemyWave().cleanUpEnemies();
-        if (gameContext.getEnemyWave().allDead()) {
+
+        // if no enemies left start the next wave
+        // todo: I could shift much of this methods enemy logic into enemy wave including the code in enemyShot
+        if (gameContext.getEnemyWave().isCreateNextWaveOnNextUpdate()) {
+            logger.info("all enemies dead, creating the next wave");
             createNextEnemyWave();
         }
         super.cleanupSprites();

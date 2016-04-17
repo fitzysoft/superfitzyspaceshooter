@@ -141,7 +141,7 @@ public class SFSpaceShooterGame extends GameWorld {
             //playerReadyTextNode.setTranslateX(playerReadyTextNode.getTranslateX() - (playerReadyTextNode.maxWidth()/2));
 
             playerReadyTextNode.setX(getGameSurface().getWidth()/2 - playerReadyTextNode.getBoundsInLocal().getWidth()/2);
-            //playerReadyTextNode.setY(getGameSurface().getHeight()/2 - playerReadyTextNode.getBoundsInLocal().getHeight()/2);
+            playerReadyTextNode.setY(getGameSurface().getHeight() / 2 /*- playerReadyTextNode.getBoundsInLocal().getHeight()/2 */);
 
             // todo : do not hardcode this value here
             playerReadyTextNode.setFill(Color.GREENYELLOW);
@@ -294,30 +294,33 @@ public class SFSpaceShooterGame extends GameWorld {
             private boolean firstThrust = false;
             @Override
             public void handle(KeyEvent event) {
-                // you can only use the keys when the level has started
-                if (gameContext.getGameState() == GameContext.GameState.LEVEL_STARTED) {
-                    PlayerShip playerShip = gameContext.getPlayerShip();
 
-                    switch (event.getCode()) {
-                        case ESCAPE:
-                            quit();
-                            break;
-                        //case KP_LEFT:
-                        case LEFT:
-                            playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
-                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
-                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
-                            event.consume();
-                            break;
-                        //case KP_RIGHT:
-                        case RIGHT:
-                            playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
-                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
-                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
-                            event.consume();
-                            break;
-                        case UP:
-                        case DOWN:
+                boolean gameStarted = gameContext.getGameState() == GameContext.GameState.LEVEL_STARTED;
+                // you can only use the keys when the level has started
+
+                PlayerShip playerShip = gameContext.getPlayerShip();
+
+                switch (event.getCode()) {
+                    case ESCAPE:
+                        quit();
+                        break;
+                    //case KP_LEFT:
+                    case LEFT:
+                        playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        event.consume();
+                        break;
+                    //case KP_RIGHT:
+                    case RIGHT:
+                        playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
+                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                        event.consume();
+                        break;
+                    case UP:
+                    case DOWN:
+                        if (gameStarted) {
                             if (event.getEventType() == KeyEvent.KEY_PRESSED) {
                                 if (!firstThrust) {
                                     playerShip.thrustShip(event.getCode() == KeyCode.UP ?
@@ -329,19 +332,20 @@ public class SFSpaceShooterGame extends GameWorld {
                             } else {
                                 firstThrust = false;
                             }
-                            break;
-                        case CONTROL:
-                        case SPACE:
-                            if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-                                playerShip.fire();
-                                event.consume();
-                            }
-                            break;
-                        default:
-                            //
-                    }
+                        }
+                        break;
+                    case CONTROL:
+                    case SPACE:
+                        if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                            playerShip.fire();
+                            event.consume();
+                        }
+                        break;
+                    default:
+                        //
                 }
             }
+
         };
 
         // Initialize input

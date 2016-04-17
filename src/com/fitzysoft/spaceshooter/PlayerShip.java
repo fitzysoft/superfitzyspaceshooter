@@ -98,8 +98,8 @@ public class PlayerShip extends Sprite {
     public void enemyHitMe() {
         if (state == PlayerState.ALIVE) {
             gameContext.getSoundManager().playSound("player_death");
-            // todo: go into a 'dying' state or take damage
             state = PlayerState.DYING;
+            killEnemies();
         }
 
     }
@@ -197,14 +197,15 @@ public class PlayerShip extends Sprite {
         node.setTranslateX(scene.getWidth() / 2);
         node.setTranslateY(scene.getHeight() / 2);
         shipSpeed = minShipSpeed;
-        //node.set
-        killEnemies();
+
+        // Tell the game world we are now fully dead
+        gameContext.getSfsGameWorld().playerHit();
     }
 
     @Override
     public void update() {
 
-        if (gameContext.getGameState() == GameContext.GameState.PRE_LEVEL_START) {
+        if (gameContext.getGameState() == GameContext.GameState.READY_TO_START) {
             // do nothing while in this state
             return;
         }

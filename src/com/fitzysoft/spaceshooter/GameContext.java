@@ -11,10 +11,10 @@ public class GameContext {
     private SoundManager soundManager;
     private PlayerShip playerShip;
 
-    enum GameState {PRE_LEVEL_START, LEVEL_STARTED, LEVEL_ENDED, PLAYER_KILLED};
+    enum GameState {READY_TO_START, LEVEL_STARTED, LEVEL_ENDED, PLAYER_KILLED};
 
     // todo: make this a property so we can bind to it ??
-    private GameState gameState = GameState.PRE_LEVEL_START;
+    private GameState gameState = GameState.READY_TO_START;
 
     EnemyWave enemyWave;
 

@@ -8,6 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.scene.Group;
 import javafx.event.EventHandler;
@@ -96,7 +100,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
             // Let's just start the action right now
             // todo: put in a time lag before starting the action
-            gameContext.setGameState(GameContext.GameState.PRE_LEVEL_START);
+            gameContext.setGameState(GameContext.GameState.READY_TO_START);
         }
         levelSetup = true;
     }
@@ -122,6 +126,35 @@ public class SFSpaceShooterGame extends GameWorld {
 
     public void playerHit() {
         // todo: lose life
+        //gameContext.setGameState(GameContext.GameState.PLAYER_KILLED);
+        resetLevel();
+    }
+
+    private void resetLevel() {
+        // todo: add in a 'Ready to Start' message
+        showPlayerReadyMessage();
+        gameContext.setGameState(GameContext.GameState.READY_TO_START);
+    }
+
+    private Text playerReadyTextNode;
+    private void showPlayerReadyMessage() {
+        // todo: experiment with 'animations' - start one here to make it glow in and out
+        if (playerReadyTextNode == null) {
+            playerReadyTextNode = new Text(getGameSurface().getWidth()/2, getGameSurface().getHeight()/2,
+                    "Player Ready!");
+            getSceneNodes().getChildren().add(playerReadyTextNode);
+            playerReadyTextNode.setFont(new Font(20));
+            playerReadyTextNode.setTextAlignment(TextAlignment.CENTER);
+            // todo : do not hardcode this value here
+            playerReadyTextNode.setFill(Color.GREENYELLOW);
+        }
+
+        playerReadyTextNode.setVisible(true);
+    }
+
+    private void clearPlayerReadyMessage() {
+        //getSceneNodes().getChildren().remove(playerReadyTextNode);
+        playerReadyTextNode.setVisible(false);
     }
 
     // very much a work in progress - will likely shift some of this to the SoundManager class
@@ -208,24 +241,38 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     @Override
-    protected void handleUpdate(Sprite sprite) {
-        frameCounter++;
-        // if enough frames have passed lets start the action
-        if (frameCounter == Constants.FRAMES_TILL_ACTION) {
-            gameContext.setGameState(GameContext.GameState.LEVEL_STARTED);
+    protected void updateSprites() {
+
+        GameContext.GameState gameState = gameContext.getGameState();
+        switch (gameState) {
+            case READY_TO_START:
+                frameCounter++;
+                // if enough frames have passed lets start the action
+                if (frameCounter >= Constants.FRAMES_TILL_ACTION) {
+                    gameContext.setGameState(GameContext.GameState.LEVEL_STARTED);
+                    frameCounter = 0;
+                    clearPlayerReadyMessage();
+                }
+                break;
+            case PLAYER_KILLED:
+                if (frameCounter == 0) {
+                    //clearPlayerReadyMessage();
+                    frameCounter ++;
+                } else {
+                    frameCounter = 0;
+                    gameContext.setGameState(GameContext.GameState.READY_TO_START);
+                }
+                break;
+            default:
+                break;
         }
-        // advance object
-        sprite.update();
+        super.updateSprites();
     }
 
-    // todo: remove below, refactor super class
     @Override
-    protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-
-        // todo: implement checks for player colliding with enemies
-        // todo: implement checks for missiles colliding with enemies
-        logger.info("Collision detected");
-        return super.handleCollision(spriteA, spriteB);
+    protected void handleUpdate(Sprite sprite) {
+        super.handleUpdate(sprite);
+        sprite.update();
     }
 
     @Override
@@ -241,6 +288,7 @@ public class SFSpaceShooterGame extends GameWorld {
         super.cleanupSprites();
     }
 
+
     // todo: Do I have to worry about thread safety? I mean can input events and handleUpdate be called at the same time?
     private void setupInput() {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {
@@ -248,55 +296,54 @@ public class SFSpaceShooterGame extends GameWorld {
             private boolean firstThrust = false;
             @Override
             public void handle(KeyEvent event) {
-                // todo: Handle thrust
+                // you can only use the keys when the level has started
+                if (gameContext.getGameState() == GameContext.GameState.LEVEL_STARTED) {
+                    PlayerShip playerShip = gameContext.getPlayerShip();
 
-                PlayerShip playerShip = gameContext.getPlayerShip();
-
-                switch (event.getCode()) {
-                    case ESCAPE:
-                        quit();
-                        break;
-                    //case KP_LEFT:
-                    case LEFT:
-                        playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
-                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
-                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
-                        event.consume();
-                        break;
-                    //case KP_RIGHT:
-                    case RIGHT:
-                        playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
-                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
-                                PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
-                        event.consume();
-                        break;
-                    case UP:
-                    case DOWN:
-                        if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-                            if (!firstThrust) {
-                                playerShip.thrustShip(event.getCode() == KeyCode.UP ?
-                                        PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD :
-                                        PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK);
-                                firstThrust = true;
+                    switch (event.getCode()) {
+                        case ESCAPE:
+                            quit();
+                            break;
+                        //case KP_LEFT:
+                        case LEFT:
+                            playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_LEFT :
+                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                            event.consume();
+                            break;
+                        //case KP_RIGHT:
+                        case RIGHT:
+                            playerShip.setSteerDirection(event.getEventType() == KeyEvent.KEY_PRESSED ?
+                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_RIGHT :
+                                    PlayerShip.PlayerSteerDirection.PLAYER_STEER_STRAIGHT);
+                            event.consume();
+                            break;
+                        case UP:
+                        case DOWN:
+                            if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                                if (!firstThrust) {
+                                    playerShip.thrustShip(event.getCode() == KeyCode.UP ?
+                                            PlayerShip.PlayerThrustDirection.PLAYER_THRUST_FWD :
+                                            PlayerShip.PlayerThrustDirection.PLAYER_THRUST_BACK);
+                                    firstThrust = true;
+                                }
+                                event.consume();
+                            } else {
+                                firstThrust = false;
                             }
-                            event.consume();
-                        } else {
-                            firstThrust = false;
-                        }
-                        break;
-                    case CONTROL:
-                    case SPACE:
-                        if (event.getEventType() == KeyEvent.KEY_PRESSED) {
-                            playerShip.fire();
-                            event.consume();
-                        }
-                        break;
-                    default:
-                        //
+                            break;
+                        case CONTROL:
+                        case SPACE:
+                            if (event.getEventType() == KeyEvent.KEY_PRESSED) {
+                                playerShip.fire();
+                                event.consume();
+                            }
+                            break;
+                        default:
+                            //
+                    }
                 }
-
             }
-
         };
 
         // Initialize input

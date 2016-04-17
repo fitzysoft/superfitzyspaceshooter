@@ -3,14 +3,11 @@ package com.fitzysoft.spaceshooter;
 import carlfx.gameengine.SoundManager;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
-import javafx.scene.effect.DisplacementMap;
-import javafx.scene.effect.FloatMap;
 import javafx.scene.image.Image;
 import carlfx.gameengine.Sprite;
 import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.logging.*;
 
 /**
@@ -30,8 +27,8 @@ public class PlayerShip extends Sprite {
     private double shipSpeed = minShipSpeed;
 
     // frame rate should be 30 fps
-    private static int framesToFadeOut = 90;
-    private int fadeOutFrameCount = 0;
+    private static int dyingStepTotal = 90;
+    private int dyingStepCount = 0;
 
     private GameContext gameContext;
 
@@ -174,25 +171,33 @@ public class PlayerShip extends Sprite {
 
     // Some cool effect
     private void dyingUpdate() {
-        fadeOutFrameCount++;
-        if (fadeOutFrameCount >= framesToFadeOut) {
+        dyingStepCount++;
+        if (dyingStepCount >= dyingStepTotal) {
             state = PlayerState.DEAD;
         }
         // todo: make it some cool effect, for now I might just play with the transparency
         // todo: I am experimenting here
-        SuperFitzySpriteEffects.blurryFadeOut(node, fadeOutFrameCount, fadeOutFrameCount);
+        //SuperFitzySpriteEffects.blurryFadeOut(node, dyingStepCount, dyingStepCount);
     }
 
     private void killEnemies() {
         ArrayList<Enemy> enemies = gameContext.getEnemyWave().getEnemies();
         for (int i = 0; i < enemies.size(); i++) {
-            enemies.get(i).explode();
+            enemies.get(i).explode(false);
         }
     }
 
     private void playerDead() {
+        // make the ship alive and reset effects, position and speed
+        // and then finally kill all the enemies
         state = PlayerState.ALIVE;
         node.setOpacity(1.0);
+        node.setEffect(null);
+        Scene scene = gameContext.getSfsGameWorld().getGameSurface();
+        node.setTranslateX(scene.getWidth() / 2);
+        node.setTranslateY(scene.getHeight() / 2);
+        shipSpeed = minShipSpeed;
+        //node.set
         killEnemies();
     }
 

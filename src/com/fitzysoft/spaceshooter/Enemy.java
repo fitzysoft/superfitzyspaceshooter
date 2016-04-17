@@ -109,7 +109,7 @@ public class Enemy extends Sprite {
                 if (simpleCollisionCheck(gameContext.getPlayerShip())) {
                     logger.info("We hit the player!!!");
                     gameContext.getPlayerShip().enemyHitMe();
-                    explode();
+                    explode(false);
                 }
                 break;
             case DYING:
@@ -125,10 +125,12 @@ public class Enemy extends Sprite {
         }
     }
 
-    public void explode() {
+    public void explode(boolean playSound) {
         //logger.info("Enemy goes kaboom!");
         // play sound
-        gameContext.getSoundManager().playSound("enemy_death");
+        if (playSound) {
+            gameContext.getSoundManager().playSound("enemy_death");
+        }
 
         // todo: animate explosion
         // todo: remove from scene after animation completes

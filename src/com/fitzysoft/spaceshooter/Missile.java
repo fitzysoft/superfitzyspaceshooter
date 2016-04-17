@@ -62,7 +62,7 @@ public class Missile extends Sprite {
         boolean hitem = false;
         for (Enemy enemy: gameContext.enemyWave.getEnemies()) {
             if (simpleCollisionCheck(enemy)) {
-                enemy.explode();
+                enemy.explode(true);
                 hitem = true;
                 break;
             }

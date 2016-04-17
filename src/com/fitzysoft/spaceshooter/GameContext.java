@@ -1,7 +1,6 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.SoundManager;
-import java.util.ArrayList;
 
 /**
  * Created by James FitzGerald on 3/31/16.

@@ -69,16 +69,11 @@ public class SFSpaceShooterGame extends GameWorld {
 
         // Create the scene
         setSceneNodes(new Group());
-        setGameSurface(new Scene(getSceneNodes(), Constants.screenWidth, Constants.screenHeight));
-        //getGameSurface().setFill(Color.WHITE);
+        setGameSurface(new Scene(getSceneNodes(), Constants.initialScreenWidth, Constants.initialScreenHeight));
         stage.setScene(getGameSurface());
         stage.setFullScreen(true);
 
         setupBackground();
-
-//        // load Kai's cool beats
-//        //
-//        playBackgroundMusic();
     }
 
     // Once the screen has resized to fullscreen we will set the level up
@@ -99,8 +94,7 @@ public class SFSpaceShooterGame extends GameWorld {
             playBackgroundMusic();
 
             // Let's just start the action right now
-            // todo: put in a time lag before starting the action
-            gameContext.setGameState(GameContext.GameState.READY_TO_START);
+            resetLevel();
         }
         levelSetup = true;
     }
@@ -140,11 +134,15 @@ public class SFSpaceShooterGame extends GameWorld {
     private void showPlayerReadyMessage() {
         // todo: experiment with 'animations' - start one here to make it glow in and out
         if (playerReadyTextNode == null) {
-            playerReadyTextNode = new Text(getGameSurface().getWidth()/2, getGameSurface().getHeight()/2,
-                    "Player Ready!");
+            playerReadyTextNode = new Text("Player Ready!");
             getSceneNodes().getChildren().add(playerReadyTextNode);
-            playerReadyTextNode.setFont(new Font(20));
+            playerReadyTextNode.setFont(new Font(Constants.FONT_SIZE));
             playerReadyTextNode.setTextAlignment(TextAlignment.CENTER);
+            //playerReadyTextNode.setTranslateX(playerReadyTextNode.getTranslateX() - (playerReadyTextNode.maxWidth()/2));
+
+            playerReadyTextNode.setX(getGameSurface().getWidth()/2 - playerReadyTextNode.getBoundsInLocal().getWidth()/2);
+            //playerReadyTextNode.setY(getGameSurface().getHeight()/2 - playerReadyTextNode.getBoundsInLocal().getHeight()/2);
+
             // todo : do not hardcode this value here
             playerReadyTextNode.setFill(Color.GREENYELLOW);
         }

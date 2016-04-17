@@ -90,6 +90,13 @@ public class Enemy extends Sprite {
         double enemySpeed = 5;
         double spin = 8.0;
 
+        // todo: shift this somewhere it will only need evaluating once
+        if (gameContext.getGameState() == GameContext.GameState.LEVEL_STARTED) {
+            enemySpeed = 5;
+        } else {
+            enemySpeed = 1;
+        }
+
         double a = gameContext.getPlayerShip().node.getTranslateX() - node.getTranslateX();
         double o = gameContext.getPlayerShip().node.getTranslateY() - node.getTranslateY();
         double h = Math.sqrt(a*a + o*o);

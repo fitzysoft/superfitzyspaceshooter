@@ -196,6 +196,8 @@ public class PlayerShip extends Sprite {
         Scene scene = gameContext.getSfsGameWorld().getGameSurface();
         node.setTranslateX(scene.getWidth() / 2);
         node.setTranslateY(scene.getHeight() / 2);
+        node.setRotate(0.0);
+
         shipSpeed = minShipSpeed;
 
         // Tell the game world we are now fully dead

@@ -13,7 +13,7 @@ public class Constants {
     public static int BACKGROUND_NODE_LEVEL = 0;
     public static int PLAYERSHIP_NODE_LEVEL = 1;
     public static int MISSILE_NODE_LEVEL = 1;
-
+    public static int TOP_LEVEL = 0xFFFF;
     public static int FRAMES_TILL_ACTION = 150;
     public static int FONT_SIZE = 60;
 

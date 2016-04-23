@@ -61,7 +61,7 @@ public class Missile extends Sprite {
         node.setTranslateY(node.getTranslateY()+speedY);
         boolean hitem = false;
         for (Enemy enemy: gameContext.enemyWave.getEnemies()) {
-            if (simpleCollisionCheck(enemy)) {
+            if (enemy.state == Enemy.State.ALIVE && simpleCollisionCheck(enemy)) {
                 enemy.explode(true);
                 hitem = true;
                 break;

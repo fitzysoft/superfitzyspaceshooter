@@ -17,8 +17,10 @@ public class Enemy extends Sprite {
     private static final int enemySpeed = 7;
 
     // todo: the playership has pretty much the same states, we should consolidate
-    enum State {ALIVE, DYING, DEAD };
-    private State state;
+    enum State {ALIVE, DYING, DEAD, HEAVEN };
+    public State state;
+    // todo: make state an observable property
+
 
     // frame rate should be 30 fps
     private static int framesToFadeOut = 60;
@@ -126,7 +128,11 @@ public class Enemy extends Sprite {
                 // removes from the gameworld sprite manager (which I may be removing)
                 handleDeath(gameContext.getSfsGameWorld());
                 gameContext.enemyWave.destroyEnemy(this);
-
+                state = State.HEAVEN;
+                break;
+            case HEAVEN:
+                // right here, proof
+                break;
             default:
                 // nada
         }
@@ -138,6 +144,9 @@ public class Enemy extends Sprite {
         if (playSound) {
             gameContext.getSoundManager().playSound("enemy_death");
         }
+
+        logger.info("Enemy shot, increase the score");
+        gameContext.increaseScoreBy(10);
 
         // todo: animate explosion
         // todo: remove from scene after animation completes

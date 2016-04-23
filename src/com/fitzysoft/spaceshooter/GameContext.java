@@ -1,6 +1,11 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.SoundManager;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
  * Created by James FitzGerald on 3/31/16.
@@ -18,7 +23,22 @@ public class GameContext {
 
     EnemyWave enemyWave;
 
+    // todo: put things like score, level, etc into a class of its own
+    // so we can persist it, and switch it out from player 1 to player 2 etc...
+
+    // todo: shift this to be a property too
     int currentLevel;
+
+    private IntegerProperty scoreProperty;
+
+    public IntegerProperty getScoreProperty() {return scoreProperty;}
+
+    public void increaseScoreBy(int value) {
+        //scoreProperty.add(value);
+        scoreProperty.set(value + scoreProperty.intValue());
+
+    }
+
 
     public GameState getGameState() {
         return gameState;
@@ -39,7 +59,10 @@ public class GameContext {
     public GameContext() {
         enemyWave = new EnemyWave(this);
         currentLevel = 0;
+        scoreProperty = new SimpleIntegerProperty();
     }
+
+
 
     public EnemyWave getEnemyWave() {
         return enemyWave;

@@ -4,6 +4,9 @@ import carlfx.gameengine.GameWorld;
 import carlfx.gameengine.Sprite;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.media.Media;
@@ -93,6 +96,8 @@ public class SFSpaceShooterGame extends GameWorld {
             //
             playBackgroundMusic();
 
+            setupScoreMessage();
+
             // Let's just start the action right now
             resetLevel();
         }
@@ -110,8 +115,6 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     public void enemyShot() {
-        // todo: bump the score
-
         // if no enemies left start the next wave
         if (gameContext.getEnemyWave().allDead()) {
             gameContext.getEnemyWave().setCreateNextWaveOnNextUpdate();
@@ -130,6 +133,7 @@ public class SFSpaceShooterGame extends GameWorld {
         gameContext.setGameState(GameContext.GameState.READY_TO_START);
     }
 
+    // todo: refactor to use property binding instead
     private Text playerReadyTextNode;
     private void showPlayerReadyMessage() {
         // todo: experiment with 'animations' - start one here to make it glow in and out
@@ -148,6 +152,24 @@ public class SFSpaceShooterGame extends GameWorld {
         }
 
         playerReadyTextNode.setVisible(true);
+    }
+
+    private Text scoreTextNode;
+    //private ChangeListener<IntegerProperty> scoreChangeListener;
+    private void setupScoreMessage() {
+        scoreTextNode = new Text("Wtf?");
+        getSceneNodes().getChildren().add(scoreTextNode);
+        scoreTextNode.setX(5.0);
+        scoreTextNode.setY(30.0);
+        scoreTextNode.setFont(new Font(20));
+        scoreTextNode.setFill(Color.YELLOWGREEN);
+        scoreTextNode.setText("Score: " + gameContext.getScoreProperty().intValue());
+        scoreTextNode.setVisible(true);
+
+        gameContext.getScoreProperty().addListener((observable, oldValue, newValue) -> {
+            scoreTextNode.setText("Score: " + gameContext.getScoreProperty().intValue());
+        });
+
     }
 
     private void clearPlayerReadyMessage() {

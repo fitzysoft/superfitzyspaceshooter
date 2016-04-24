@@ -100,6 +100,7 @@ public class PlayerShip extends Sprite {
             gameContext.getSoundManager().playSound("player_death");
             state = PlayerState.DYING;
             killEnemies();
+            gameContext.loseLife();
         }
 
     }

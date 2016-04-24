@@ -16,5 +16,5 @@ public class Constants {
     public static int TOP_LEVEL = 0xFFFF;
     public static int FRAMES_TILL_ACTION = 150;
     public static int FONT_SIZE = 60;
-
+    public static int LIVES = 3;
 }

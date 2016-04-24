@@ -135,6 +135,7 @@ public class SFSpaceShooterGame extends GameWorld {
 
     // todo: refactor to use property binding instead
     private Text playerReadyTextNode;
+
     private void showPlayerReadyMessage() {
         // todo: experiment with 'animations' - start one here to make it glow in and out
         if (playerReadyTextNode == null) {
@@ -155,9 +156,10 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     private Text scoreTextNode;
-    //private ChangeListener<IntegerProperty> scoreChangeListener;
+    private Text livesLeftTextNode;
+
     private void setupScoreMessage() {
-        scoreTextNode = new Text("Wtf?");
+        scoreTextNode = new Text();
         getSceneNodes().getChildren().add(scoreTextNode);
         scoreTextNode.setX(5.0);
         scoreTextNode.setY(30.0);
@@ -169,6 +171,22 @@ public class SFSpaceShooterGame extends GameWorld {
         gameContext.getScoreProperty().addListener((observable, oldValue, newValue) -> {
             scoreTextNode.setText("Score: " + gameContext.getScoreProperty().intValue());
         });
+
+        livesLeftTextNode = new Text();
+        getSceneNodes().getChildren().add(livesLeftTextNode);
+        livesLeftTextNode.setX(5);
+        livesLeftTextNode.setY(60);
+        livesLeftTextNode.setFont(new Font(20));
+        livesLeftTextNode.setFill(Color.YELLOWGREEN);
+        livesLeftTextNode.setText("Lives: " + gameContext.getLivesProperty().intValue());
+        gameContext.getLivesProperty().addListener((observable, oldValue, newValue) -> {
+                    livesLeftTextNode.setText("Lives: " + gameContext.getLivesProperty().intValue());
+                    if (newValue.intValue() <= 0) {
+                        // Its game over man!
+                        // todo: game over logic
+                    }
+                }
+        );
 
     }
 

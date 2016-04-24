@@ -31,7 +31,9 @@ public class GameContext {
 
     private IntegerProperty scoreProperty;
 
-    public IntegerProperty getScoreProperty() {return scoreProperty;}
+    public IntegerProperty getScoreProperty() {
+        return scoreProperty;
+    }
 
     public void increaseScoreBy(int value) {
         //scoreProperty.add(value);
@@ -39,6 +41,13 @@ public class GameContext {
 
     }
 
+    private IntegerProperty livesProperty;
+    public IntegerProperty getLivesProperty() {
+        return livesProperty;
+    }
+    public void loseLife() {
+        livesProperty.set(livesProperty.intValue() - 1);
+    }
 
     public GameState getGameState() {
         return gameState;
@@ -60,6 +69,7 @@ public class GameContext {
         enemyWave = new EnemyWave(this);
         currentLevel = 0;
         scoreProperty = new SimpleIntegerProperty();
+        livesProperty = new SimpleIntegerProperty(Constants.LIVES);
     }
 
 

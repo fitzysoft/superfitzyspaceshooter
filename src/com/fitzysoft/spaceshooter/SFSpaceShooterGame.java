@@ -20,6 +20,7 @@ import javafx.scene.Group;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.logging.*;
 // for the background - will be refactored
 import javafx.scene.image.ImageView;
@@ -124,34 +125,92 @@ public class SFSpaceShooterGame extends GameWorld {
     public void playerHit() {
         // todo: lose life
         //gameContext.setGameState(GameContext.GameState.PLAYER_KILLED);
-        resetLevel();
+        if (gameContext.getLivesProperty().intValue() <= 0) {
+            // its game over man!
+            gameOver();
+        } else {
+            resetLevel();
+        }
     }
 
     private void resetLevel() {
-        // todo: add in a 'Ready to Start' message
-        showPlayerReadyMessage();
+        showGameMessage("Player Ready", Color.GREENYELLOW);
         gameContext.setGameState(GameContext.GameState.READY_TO_START);
+        doIn(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                startLevel();
+                return null;
+            }
+        }, 3000);
+    }
+
+    private void startLevel() {
+        gameContext.setGameState(GameContext.GameState.LEVEL_STARTED);
+        clearPlayerReadyMessage();
+    }
+
+    private void gameOver() {
+        showGameMessage("Game Over", Color.ORANGERED);
+        gameContext.setGameState(GameContext.GameState.GAME_OVER);
+        doIn(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                gameContext.getLivesProperty().set(Constants.LIVES);
+                resetLevel();
+                return null;
+            }
+        }, 15000);
+    }
+
+    // todo: You know below is very ugly!!!
+    // todo: consider throw away this state stuff in favour of property listening / reactive style
+    //private GameContext.GameState newState;
+    private boolean frameCounterActive;
+    private Callable<Void> f;   // todo: will refactor into a structure and have a list of them
+    private void doIn(Callable<Void> f, int milliseconds) {
+        // todo: only support one thing at a time right now, change the use of frameCounter to something more intelligent
+        //
+        // todo: hardcoded fpms
+        this.frameCounter = (int) (0.006 * (double) milliseconds);
+        this.f = f;
+        frameCounterActive = true;
+        //this.newState = newState;
+    }
+    private void frameDecrement() {
+        if (frameCounterActive) {
+            if (frameCounter == 0) {
+                frameCounterActive = false;
+                try {
+                    f.call();
+                } catch (Exception ex) {
+                    // nada
+                }
+
+            } else {
+                frameCounter--;
+            }
+        }
+
     }
 
     // todo: refactor to use property binding instead
     private Text playerReadyTextNode;
 
-    private void showPlayerReadyMessage() {
+    private void showGameMessage(String message, Color color) {
         // todo: experiment with 'animations' - start one here to make it glow in and out
         if (playerReadyTextNode == null) {
-            playerReadyTextNode = new Text("Player Ready!");
+            playerReadyTextNode = new Text(message);
             getSceneNodes().getChildren().add(playerReadyTextNode);
             playerReadyTextNode.setFont(new Font(Constants.FONT_SIZE));
             playerReadyTextNode.setTextAlignment(TextAlignment.CENTER);
             //playerReadyTextNode.setTranslateX(playerReadyTextNode.getTranslateX() - (playerReadyTextNode.maxWidth()/2));
-
             playerReadyTextNode.setX(getGameSurface().getWidth()/2 - playerReadyTextNode.getBoundsInLocal().getWidth()/2);
             playerReadyTextNode.setY(getGameSurface().getHeight() / 2 /*- playerReadyTextNode.getBoundsInLocal().getHeight()/2 */);
-
-            // todo : do not hardcode this value here
-            playerReadyTextNode.setFill(Color.GREENYELLOW);
         }
 
+        playerReadyTextNode.setText(message);
+        playerReadyTextNode.setFill(color);
         playerReadyTextNode.setVisible(true);
     }
 
@@ -192,7 +251,10 @@ public class SFSpaceShooterGame extends GameWorld {
 
     private void clearPlayerReadyMessage() {
         //getSceneNodes().getChildren().remove(playerReadyTextNode);
-        playerReadyTextNode.setVisible(false);
+        if (playerReadyTextNode != null) {
+            playerReadyTextNode.setVisible(false);
+        }
+
     }
 
     // very much a work in progress - will likely shift some of this to the SoundManager class
@@ -281,6 +343,8 @@ public class SFSpaceShooterGame extends GameWorld {
     @Override
     protected void updateSprites() {
 
+        frameDecrement();
+        /*
         GameContext.GameState gameState = gameContext.getGameState();
         switch (gameState) {
             case READY_TO_START:
@@ -301,9 +365,11 @@ public class SFSpaceShooterGame extends GameWorld {
                     gameContext.setGameState(GameContext.GameState.READY_TO_START);
                 }
                 break;
+            case GAME_OVER:
             default:
                 break;
-        }
+        }*/
+
         super.updateSprites();
     }
 

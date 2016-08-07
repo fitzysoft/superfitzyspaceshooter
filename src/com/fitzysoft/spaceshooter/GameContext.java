@@ -16,7 +16,9 @@ public class GameContext {
     private SoundManager soundManager;
     private PlayerShip playerShip;
 
-    enum GameState {READY_TO_START, LEVEL_STARTED, LEVEL_ENDED, PLAYER_KILLED};
+    enum GameState {READY_TO_START, LEVEL_STARTED, LEVEL_ENDED, PLAYER_KILLED, GAME_OVER};
+
+    // GAME_OVER state, we stay in this state for a few seconds
 
     // todo: make this a property so we can bind to it ??
     private GameState gameState = GameState.READY_TO_START;

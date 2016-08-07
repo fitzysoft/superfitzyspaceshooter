@@ -43,7 +43,8 @@ public class PlaygroundApplication extends Application {
         //g = particleEffectsManager.getGraphicsContext2D();
         root.getChildren().add(particleEffectsManager);
 
-        particleEffectsManager.addParticleEmitterWithOriginTracking(new ExplosionEmitter(), xProperty, yProperty);
+        particleEffectsManager.addParticleEmitterWithOriginTracking(new ExplosionEmitter(), xProperty.add(0.0),
+                yProperty.add(0.0));
 
         return root;
     }

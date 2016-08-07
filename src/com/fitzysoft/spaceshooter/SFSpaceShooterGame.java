@@ -2,6 +2,7 @@ package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.GameWorld;
 import carlfx.gameengine.Sprite;
+import com.fitzysoft.particles.ParticleEffectsManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
@@ -86,9 +87,15 @@ public class SFSpaceShooterGame extends GameWorld {
             // create spaceship
             createPlayerShip();
 
+            ParticleEffectsManager particleEffectsManager = new ParticleEffectsManager((int)getGameSurface().getWidth(),
+                    (int)getGameSurface().getHeight());
+            gameContext.setParticleEffectsManager(particleEffectsManager);
+            getSceneNodes().getChildren().add(particleEffectsManager);
+
             // create aliens
             //
             gameContext.enemyWave.createEnemies(gameContext.currentLevel);
+
 
             // Setup our input handlers
             setupInput();
@@ -369,7 +376,7 @@ public class SFSpaceShooterGame extends GameWorld {
             default:
                 break;
         }*/
-
+        gameContext.getParticleEffectsManager().update();
         super.updateSprites();
     }
 

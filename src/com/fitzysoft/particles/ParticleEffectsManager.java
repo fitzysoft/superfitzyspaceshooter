@@ -1,5 +1,6 @@
 package com.fitzysoft.particles;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.effect.BlendMode;
@@ -36,10 +37,10 @@ public class ParticleEffectsManager extends Canvas {
 
     private class TrackingEmitter {
         Emitter emitter;
-        DoubleProperty xProperty;
-        DoubleProperty yProperty;
+        DoubleBinding xProperty;
+        DoubleBinding yProperty;
 
-        public TrackingEmitter(Emitter emitter, DoubleProperty xProperty, DoubleProperty yProperty) {
+        public TrackingEmitter(Emitter emitter, DoubleBinding xProperty, DoubleBinding yProperty) {
             this.emitter = emitter;
             this.xProperty = xProperty;
             this.yProperty = yProperty;
@@ -47,7 +48,7 @@ public class ParticleEffectsManager extends Canvas {
     }
 
     // add a particle emitter and have the x,y of the e
-    public void addParticleEmitterWithOriginTracking(Emitter emitter, DoubleProperty xProperty, DoubleProperty yProperty) {
+    public void addParticleEmitterWithOriginTracking(Emitter emitter, DoubleBinding xProperty, DoubleBinding yProperty) {
         emitters.add(new TrackingEmitter(emitter, xProperty, yProperty));
     }
 

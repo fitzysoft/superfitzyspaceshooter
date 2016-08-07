@@ -1,6 +1,7 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.SoundManager;
+import com.fitzysoft.particles.ParticleEffectsManager;
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -66,6 +67,20 @@ public class GameContext {
     public void setCurrentLevel(int currentLevel) {
         this.currentLevel = currentLevel;
     }
+
+    private ParticleEffectsManager particleEffectsManager;
+
+    public ParticleEffectsManager getParticleEffectsManager() {
+        return particleEffectsManager;
+    }
+
+    public void setParticleEffectsManager(ParticleEffectsManager particleEffectsManager) {
+        this.particleEffectsManager = particleEffectsManager;
+    }
+
+
+
+
 
     public GameContext() {
         enemyWave = new EnemyWave(this);

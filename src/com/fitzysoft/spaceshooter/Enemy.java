@@ -1,6 +1,9 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.Sprite;
+import com.fitzysoft.particles.ExplosionEmitter;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -148,10 +151,14 @@ public class Enemy extends Sprite {
         logger.info("Enemy shot, increase the score");
         gameContext.increaseScoreBy(10);
 
-        // todo: animate explosion
-        // todo: remove from scene after animation completes
 
-        // todo: We will go to a dying state where we are exploding
+        // todo: animate explosion
+        DoubleBinding x = node.translateXProperty().add( 0.5 * node.getBoundsInParent().getWidth());
+        DoubleBinding y = node.translateYProperty().add( 0.5 * node.getBoundsInParent().getHeight());
+
+        gameContext.getParticleEffectsManager().addParticleEmitterWithOriginTracking(new ExplosionEmitter(), x, y);
+
+        // We will go to a dying state where we are exploding
         state = State.DYING;
 
     }

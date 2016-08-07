@@ -13,14 +13,14 @@ import java.util.List;
 public class ExplosionEmitter extends Emitter {
 
     private int numParticles = 15; // todo: make configurable
-    private double expiresIn = 1.5;
+    private double expiresIn = 0.25;
     private double baseRadius = 5;
     private double baseDeltaRange = 3;
-    private double velocity = 3;
+    private double velocity = 7.5;
     private int step;
-    private int stepTotal = 180;
+    private int stepTotal = 45;
 
-    Color c = Color.rgb(240, 32, 47);
+    Color c = Color.rgb(240, 32, 147);
 
     public ExplosionEmitter() {
         reset();

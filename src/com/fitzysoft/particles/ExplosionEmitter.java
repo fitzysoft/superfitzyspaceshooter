@@ -30,6 +30,10 @@ public class ExplosionEmitter extends Emitter {
         step = 0;
     }
 
+    public boolean finished() {
+        return step >= stepTotal;
+    }
+
     @Override
     public List<Particle> emit(double x, double y) {
         List<Particle> particleList = new ArrayList<>();

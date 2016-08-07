@@ -2,6 +2,8 @@ package com.fitzysoft.particles;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,22 +25,32 @@ import java.util.List;
 public class PlaygroundApplication extends Application {
 
     // todo: shift this to its own class
-    private List<Particle> particles = new ArrayList<>();
-    private Emitter emitter = new ExplosionEmitter();
+    //private List<Particle> particles = new ArrayList<>();
+    //private Emitter emitter = new ExplosionEmitter();
 
-    private GraphicsContext g;
+    //private GraphicsContext g;
+    ParticleEffectsManager particleEffectsManager;
+    DoubleProperty xProperty = new SimpleDoubleProperty(300.0);
+    DoubleProperty yProperty = new SimpleDoubleProperty(300.0);
 
     private Parent createContent() {
         Pane root = new Pane();
         root.setPrefSize(600, 600);
 
-        Canvas canvas = new Canvas(600, 600);
-        g = canvas.getGraphicsContext2D();
-        root.getChildren().add(canvas);
+        particleEffectsManager = new ParticleEffectsManager(600, 600);
+
+        //Canvas canvas = new Canvas(600, 600);
+        //g = particleEffectsManager.getGraphicsContext2D();
+        root.getChildren().add(particleEffectsManager);
+
+        particleEffectsManager.addParticleEmitterWithOriginTracking(new ExplosionEmitter(), xProperty, yProperty);
+
         return root;
     }
 
     private void onUpdate() {
+        particleEffectsManager.update();
+        /*
         g.setFill(Color.BLACK);
         g.setGlobalAlpha(1.0);
         g.setGlobalBlendMode(BlendMode.SRC_OVER);
@@ -57,7 +69,7 @@ public class PlaygroundApplication extends Application {
                 continue;
             }
             p.render(g);
-        }
+        } */
     }
 
     @Override
@@ -69,8 +81,8 @@ public class PlaygroundApplication extends Application {
         EventHandler eventHandler = new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                particles.clear();
-                emitter.reset();
+                //particles.clear();
+                //emitter.reset();
             }
         };
         primaryStage.getScene().setOnKeyPressed(eventHandler);

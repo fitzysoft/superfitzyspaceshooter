@@ -62,7 +62,10 @@ public class ParticleEffectsManager extends Canvas {
 
         for (Iterator<TrackingEmitter> it = emitters.iterator(); it.hasNext();) {
             TrackingEmitter trackingEmitter = it.next();
-            particles.addAll(trackingEmitter.emitter.emit(trackingEmitter.xProperty.getValue(), trackingEmitter.yProperty.getValue()));
+            List<Particle> newParticles = trackingEmitter.emitter.emit(trackingEmitter.xProperty.getValue(), trackingEmitter.yProperty.getValue());
+            if (newParticles != null) {
+                particles.addAll(newParticles);
+            }
         }
 
         for (Iterator<Particle> it = particles.iterator(); it.hasNext();) {
@@ -70,6 +73,8 @@ public class ParticleEffectsManager extends Canvas {
             p.update();
             if (p.isAlive()) {
                 p.render(g);
+            } else {
+                it.remove();
             }
         }
     }

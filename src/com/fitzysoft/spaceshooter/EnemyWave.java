@@ -31,13 +31,39 @@ public class EnemyWave {
     public void createEnemies(int waveLevel) {
         logger.info("Creating enemy wave " + waveLevel);
         createNextWaveOnNextUpdate = false;
+
         // increase the number of enemies coming at a time with each wave
-        for (int i = 0; i < waveLevel + 1; ++i) {
-            Enemy enemy = new Enemy(gameContext);
-            enemies.add(enemy);
-            gameContext.getSfsGameWorld().getSpriteManager().addSprites(enemy);
-            gameContext.getSfsGameWorld().getSceneNodes().getChildren().add(enemy.node);
+        if (waveLevel < 3) {
+            createEnemy(EnemyType.RedNoob, waveLevel+1);
+        } else if (waveLevel > 3 && waveLevel < 6) {
+            createEnemy(EnemyType.RedNoob, 1);
+            createEnemy(EnemyType.Bursty, waveLevel);
+        } else {
+            createEnemy(EnemyType.RedNoob, waveLevel / 5);
+            createEnemy(EnemyType.Bursty, waveLevel);
         }
+    }
+    private enum EnemyType { RedNoob, Bursty}
+    private void createEnemy(EnemyType type, int count) {
+        // todo: this is not written in an optimal way
+        switch (type) {
+            case RedNoob:
+                for (int i = 0; i < count; i++) {
+                    addEnemy(new EnemyRedNoob(gameContext));
+                }
+                break;
+            case Bursty:
+                BurstySwarm swarm = new BurstySwarm(gameContext, count);
+                for (Enemy enemy:swarm.getEnemies()) {
+                    addEnemy(enemy);
+                }
+        }
+    }
+
+    private void addEnemy(Enemy enemy) {
+        enemies.add(enemy);
+        gameContext.getSfsGameWorld().getSpriteManager().addSprites(enemy);
+        gameContext.getSfsGameWorld().getSceneNodes().getChildren().add(enemy.node);
     }
 
     // mark this enemy as 'to be removed', and remove it from the scene graph

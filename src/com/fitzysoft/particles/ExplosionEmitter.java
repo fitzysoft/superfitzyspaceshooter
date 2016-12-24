@@ -16,7 +16,7 @@ public class ExplosionEmitter extends Emitter {
     private double expiresIn = 0.25;
     private double baseRadius = 5;
     private double baseDeltaRange = 3;
-    private double velocity = 7.5;
+    private double velocity = 16;
     private int step;
     private int stepTotal = 45;
 
@@ -47,17 +47,22 @@ public class ExplosionEmitter extends Emitter {
             double xVel = velocity * (Math.random() - 0.5);
             double yVel = velocity * (Math.random() - 0.5);
 
-            int colorDelta = (int)(0.15 * (double) step * (Math.random()));
-            int g = 15; // + colorDelta;
-//            if (g > 255) {
-//                g = 255;
-//            }
+            int colorDelta = (int)(0.15 * (double) step +  xVel);
+
+            int r = (int) (217.0 - step * 0.25);
+            if (r > 255) {
+                r = 255;
+            }
+            int g = 15 + colorDelta;
+            if (g > 255) {
+                g = 255;
+            }
             int b = 27 + colorDelta;
             if (b > 255) {
                 b = 255;
             }
 
-            Color color = Color.rgb(217, g, b);
+            Color color = Color.rgb(r, g, b);
 
             Particle p = new Particle(x + (Math.random()-0.5)*20, y + (Math.random()-0.5)*20,
                     new Point2D(xVel, yVel), expiresIn,

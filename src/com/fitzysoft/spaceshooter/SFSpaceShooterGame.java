@@ -158,12 +158,15 @@ public class SFSpaceShooterGame extends GameWorld {
     }
 
     private void gameOver() {
-        showGameMessage("Game Over", Color.ORANGERED);
+
+        showGameMessage("Game Over! Score: " + gameContext.getScoreProperty().intValue(), Color.ORANGERED);
         gameContext.setGameState(GameContext.GameState.GAME_OVER);
         doIn(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
                 gameContext.getLivesProperty().set(Constants.LIVES);
+                gameContext.getScoreProperty().set(0);
+                gameContext.setCurrentLevel(0);
                 resetLevel();
                 return null;
             }
@@ -184,6 +187,7 @@ public class SFSpaceShooterGame extends GameWorld {
         frameCounterActive = true;
         //this.newState = newState;
     }
+
     private void frameDecrement() {
         if (frameCounterActive) {
             if (frameCounter == 0) {
@@ -201,35 +205,40 @@ public class SFSpaceShooterGame extends GameWorld {
 
     }
 
+    private double timeRemaining() {
+        return frameCounter / 0.006;
+    }
+
     // todo: refactor to use property binding instead
     private Text playerReadyTextNode;
 
-    private void showGameMessage(String message, Color color) {
+    public void showGameMessage(String message, Color color) {
         // todo: experiment with 'animations' - start one here to make it glow in and out
         if (playerReadyTextNode == null) {
             playerReadyTextNode = new Text(message);
             getSceneNodes().getChildren().add(playerReadyTextNode);
             playerReadyTextNode.setFont(new Font(Constants.FONT_SIZE));
             playerReadyTextNode.setTextAlignment(TextAlignment.CENTER);
-            //playerReadyTextNode.setTranslateX(playerReadyTextNode.getTranslateX() - (playerReadyTextNode.maxWidth()/2));
-            playerReadyTextNode.setX(getGameSurface().getWidth()/2 - playerReadyTextNode.getBoundsInLocal().getWidth()/2);
-            playerReadyTextNode.setY(getGameSurface().getHeight() / 2 /*- playerReadyTextNode.getBoundsInLocal().getHeight()/2 */);
         }
 
         playerReadyTextNode.setText(message);
         playerReadyTextNode.setFill(color);
+        playerReadyTextNode.setX(getGameSurface().getWidth()/2 - playerReadyTextNode.getBoundsInLocal().getWidth()/2);
+        playerReadyTextNode.setY(getGameSurface().getHeight() / 2 /*- playerReadyTextNode.getBoundsInLocal().getHeight()/2 */);
         playerReadyTextNode.setVisible(true);
     }
 
     private Text scoreTextNode;
     private Text livesLeftTextNode;
+    private Text levelTextNode;
 
     private void setupScoreMessage() {
         scoreTextNode = new Text();
         getSceneNodes().getChildren().add(scoreTextNode);
+        Font font = new Font(20);
         scoreTextNode.setX(5.0);
         scoreTextNode.setY(30.0);
-        scoreTextNode.setFont(new Font(20));
+        scoreTextNode.setFont(font);
         scoreTextNode.setFill(Color.YELLOWGREEN);
         scoreTextNode.setText("Score: " + gameContext.getScoreProperty().intValue());
         scoreTextNode.setVisible(true);
@@ -242,7 +251,7 @@ public class SFSpaceShooterGame extends GameWorld {
         getSceneNodes().getChildren().add(livesLeftTextNode);
         livesLeftTextNode.setX(5);
         livesLeftTextNode.setY(60);
-        livesLeftTextNode.setFont(new Font(20));
+        livesLeftTextNode.setFont(font);
         livesLeftTextNode.setFill(Color.YELLOWGREEN);
         livesLeftTextNode.setText("Lives: " + gameContext.getLivesProperty().intValue());
         gameContext.getLivesProperty().addListener((observable, oldValue, newValue) -> {
@@ -250,9 +259,21 @@ public class SFSpaceShooterGame extends GameWorld {
                     if (newValue.intValue() <= 0) {
                         // Its game over man!
                         // todo: game over logic
+                        gameContext.setCurrentLevel(1);
                     }
                 }
         );
+
+        levelTextNode = new Text();
+        getSceneNodes().getChildren().add(levelTextNode);
+        levelTextNode.setX(5);
+        levelTextNode.setY(90);
+        levelTextNode.setFont(font);
+        levelTextNode.setFill(Color.YELLOWGREEN);
+        levelTextNode.setText("Level: " + gameContext.getCurrentLevel() + 1);
+        gameContext.currentLevelProperty().addListener((observable, oldValue, newValue) -> {
+            levelTextNode.setText("Level: " + gameContext.getCurrentLevel());
+        });
 
     }
 
@@ -317,21 +338,6 @@ public class SFSpaceShooterGame extends GameWorld {
             }
         });
 
-//
-//        BackgroundImage backgroundImage = new BackgroundImage(
-//                new Image(getClass().getClassLoader().getResource("ann11053e2-1200x800.png").toExternalForm(), true),
-//                        BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
-//                        BackgroundSize.DEFAULT);
-//        getSceneNodes().getChildren().add(backgroundImage);
-
-//        //getGameSurface().getRoot().get  .setBackground(new Background(backgroundImage));
-
-
-//        // todo: this feels kind of ugly - I shouldn't have to use CSS
-//        String imageUrl = getClass().getClassLoader().getResource("ann11053e2-1200x800.png").toExternalForm();
-//        getGameSurface().getRoot().setStyle("-fx-background-image: url('" + imageUrl + "'); " +
-//                "-fx-background-position: center center; " +
-//                "-fx-background-repeat: stretch;");
     }
 
     private void createPlayerShip() {
@@ -351,32 +357,11 @@ public class SFSpaceShooterGame extends GameWorld {
     protected void updateSprites() {
 
         frameDecrement();
-        /*
-        GameContext.GameState gameState = gameContext.getGameState();
-        switch (gameState) {
-            case READY_TO_START:
-                frameCounter++;
-                // if enough frames have passed lets start the action
-                if (frameCounter >= Constants.FRAMES_TILL_ACTION) {
-                    gameContext.setGameState(GameContext.GameState.LEVEL_STARTED);
-                    frameCounter = 0;
-                    clearPlayerReadyMessage();
-                }
-                break;
-            case PLAYER_KILLED:
-                if (frameCounter == 0) {
-                    //clearPlayerReadyMessage();
-                    frameCounter ++;
-                } else {
-                    frameCounter = 0;
-                    gameContext.setGameState(GameContext.GameState.READY_TO_START);
-                }
-                break;
-            case GAME_OVER:
-            default:
-                break;
-        }*/
-        gameContext.getParticleEffectsManager().update();
+
+        if (gameContext.getParticleEffectsManager() != null) {
+            gameContext.getParticleEffectsManager().update();
+        }
+
         super.updateSprites();
     }
 

@@ -17,7 +17,7 @@ public class Missile extends Sprite {
 
     // todo: I have repeated myself
     // close enough?
-    private static final double missileSpeed = 48;
+    private static final double missileSpeed = 64;
     private GameContext gameContext;
     private double angle;
     private double speedX;

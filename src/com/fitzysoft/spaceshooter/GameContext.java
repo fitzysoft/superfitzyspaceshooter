@@ -61,12 +61,19 @@ public class GameContext {
     }
 
     public int getCurrentLevel() {
-        return currentLevel;
+        return currentLevelProperty.get();
     }
 
-    public void setCurrentLevel(int currentLevel) {
-        this.currentLevel = currentLevel;
+    public void setCurrentLevel(int level) {
+        currentLevelProperty.set(level);
     }
+
+    public IntegerProperty currentLevelProperty() {
+        return currentLevelProperty;
+    }
+
+    public IntegerProperty currentLevelProperty;
+
 
     private ParticleEffectsManager particleEffectsManager;
 
@@ -79,14 +86,12 @@ public class GameContext {
     }
 
 
-
-
-
     public GameContext() {
         enemyWave = new EnemyWave(this);
         currentLevel = 0;
         scoreProperty = new SimpleIntegerProperty();
         livesProperty = new SimpleIntegerProperty(Constants.LIVES);
+        currentLevelProperty = new SimpleIntegerProperty(1);
     }
 
 

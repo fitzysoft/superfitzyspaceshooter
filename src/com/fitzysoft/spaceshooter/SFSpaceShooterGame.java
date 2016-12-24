@@ -166,7 +166,7 @@ public class SFSpaceShooterGame extends GameWorld {
             public Void call() throws Exception {
                 gameContext.getLivesProperty().set(Constants.LIVES);
                 gameContext.getScoreProperty().set(0);
-                gameContext.setCurrentLevel(0);
+                gameContext.setCurrentLevel(1);
                 resetLevel();
                 return null;
             }
@@ -259,7 +259,7 @@ public class SFSpaceShooterGame extends GameWorld {
                     if (newValue.intValue() <= 0) {
                         // Its game over man!
                         // todo: game over logic
-                        gameContext.setCurrentLevel(1);
+                        //gameContext.setCurrentLevel(1);
                     }
                 }
         );
@@ -288,8 +288,16 @@ public class SFSpaceShooterGame extends GameWorld {
     // very much a work in progress - will likely shift some of this to the SoundManager class
     private void playBackgroundMusic() {
         logger.info("playBackgroundMusic");
+
+        // We want sfsong (which is index 0) to come up more often
+        //
+        int nextSongIndex = rng.nextInt(kaisCoolBeats.length+1);
+        if (nextSongIndex > kaisCoolBeats.length) {
+            nextSongIndex = 0;
+        }
+
         String songToPlay = getClass().getClassLoader().getResource(
-                kaisCoolBeats[rng.nextInt(kaisCoolBeats.length)]).toString();
+                kaisCoolBeats[nextSongIndex]).toString();
         Media media = new Media(songToPlay);
         backgroundMediaPlayer = new MediaPlayer(media);
         logger.info("Going to play " + songToPlay);

@@ -1,5 +1,7 @@
 package com.fitzysoft.spaceshooter;
 
+import javafx.geometry.Bounds;
+
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -53,7 +55,7 @@ public class EnemyWave {
                 }
                 break;
             case Bursty:
-                BurstySwarm swarm = new BurstySwarm(gameContext, count);
+                BurstySwarm swarm = new BurstySwarm(gameContext, count, gameContext.getPlayerShip().node.getBoundsInLocal());
                 for (Enemy enemy:swarm.getEnemies()) {
                     addEnemy(enemy);
                 }

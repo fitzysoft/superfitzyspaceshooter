@@ -1,10 +1,7 @@
 package com.fitzysoft.spaceshooter;
 
 import carlfx.gameengine.GameWorld;
-import carlfx.gameengine.SoundManager;
 import carlfx.gameengine.Sprite;
-import com.sun.javafx.geom.Vec2d;
-import com.sun.tools.internal.jxc.ap.Const;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
